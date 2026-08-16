@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>Manufacturing Digital Twin — Methodology</title>
+  <link rel="stylesheet" href="/workspace/assets/styles.css" />
+</head>
+<body class="app-body methodology-body">
+  <header class="app-header methodology-header">
+    <div class="brand-block">
+      <div class="eyebrow">MANUFACTURING DIGITAL TWIN · V1.0</div>
+      <h1>Engineering Methodology</h1>
+      <p class="header-subtitle">The mathematics, model contracts and validation boundaries behind the decision workbench.</p>
+    </div>
+    <div class="header-right">
+      <nav class="top-nav" aria-label="Primary navigation">
+        <a class="nav-link" href="/workspace">Operations workbench</a>
+        <a class="nav-link active" href="/methodology">Methodology</a>
+        <a class="nav-link" href="/docs" target="_blank" rel="noreferrer">API</a>
+      </nav>
+      <div class="status-cluster"><span id="methodVersion" class="meta-pill">v—</span><span class="status-pill ok">METHODS TRACEABLE</span></div>
+    </div>
+  </header>
+
+  <main class="methodology-main">
+    <section class="method-hero" id="decision-chain">
+      <span class="section-kicker">COMPUTATIONAL CONTRACT</span>
+      <h2>One synchronized decision chain, four evidence types</h2>
+      <p>The platform deliberately separates what is <strong>observed</strong>, <strong>predicted</strong>, <strong>optimized</strong> and <strong>simulated</strong>. The recommendation is only the final evidence packet passed to a human approval gate.</p>
+      <div class="pipeline">
+        <div><span>01</span><strong>Events</strong><small>observed / ingested</small></div><i>→</i>
+        <div><span>02</span><strong>Twin snapshot</strong><small>current operational state</small></div><i>→</i>
+        <div><span>03</span><strong>AI forecasts</strong><small>synthetically validated</small></div><i>→</i>
+        <div><span>04</span><strong>IE consequence</strong><small>flow / capacity / reliability</small></div><i>→</i>
+        <div><span>05</span><strong>OR recovery</strong><small>finite-capacity MILP</small></div><i>→</i>
+        <div><span>06</span><strong>Future-state DES</strong><small>Monte Carlo / failures</small></div><i>→</i>
+        <div><span>07</span><strong>Human decision</strong><small>approve / reject / defer</small></div>
+      </div>
+    </section>
+
+    <section class="method-evidence" aria-label="Live validation evidence">
+      <div class="method-section-heading"><span class="section-kicker">LIVE PACKAGED EVIDENCE</span><h2>What this exact build has validated</h2></div>
+      <div id="methodEvidenceGrid" class="evidence-grid"><p class="muted">Loading packaged model evidence…</p></div>
+      <p class="boundary-note">Predictive metrics are synthetic benchmark validation. They are not claims of real plant accuracy or realized operational benefit.</p>
+    </section>
+
+    <section class="method-section" id="digital-twin">
+      <div class="method-section-heading"><span class="section-kicker">A · DIGITAL TWIN FIRST</span><h2>Residual planning starts from the current event-sourced state</h2></div>
+      <div class="method-columns">
+        <div class="method-copy">
+          <p><code>TwinSnapshot → TwinPlanningState</code> is the architectural boundary. Completed work is removed, running work is frozen/projected, the current twin timestamp becomes the scheduling clock, and machine availability carries forward.</p>
+          <p>A machine that is currently down is never silently made available: a recovery assumption is required before a residual schedule can use it.</p>
+        </div>
+        <div class="formula-card"><span>STATE CONTRACT</span><div class="formula">S<sub>t</sub> = { jobs, operations, machines, WIP, t, events }</div><p>AI, IE, optimization and future-state simulation operate on the residual state derived from <em>S<sub>t</sub></em>, not on raw CSV rows or a pristine benchmark reset.</p></div>
+      </div>
+    </section>
+
+    <section class="method-section" id="ie-math">
+      <div class="method-section-heading"><span class="section-kicker">B · INDUSTRIAL ENGINEERING</span><h2>Factory physics, flow control, reliability and process control</h2></div>
+      <div class="formula-grid">
+        <article class="formula-card"><span>LITTLE'S LAW</span><div class="formula">L = λW</div><p>WIP equals throughput rate times mean flow time. The DES independently checks trajectory closure.</p></article>
+        <article class="formula-card"><span>KINGMAN G/G/1</span><div class="formula">W<sub>q</sub> ≈ ρ/(1−ρ) · (C<sub>a</sub>²+C<sub>s</sub>²)/2 · E[S]</div><p>Approximates queue waiting under arrival/service variability for utilization ρ &lt; 1.</p></article>
+        <article class="formula-card"><span>AVAILABILITY</span><div class="formula">A = MTBF / (MTBF + MTTR)</div><p>Feeds effective capacity and stochastic failure/repair assumptions.</p></article>
+        <article class="formula-card"><span>OEE</span><div class="formula">OEE = Availability × Performance × Quality</div><p>Computed only when all three real signals exist; otherwise the live endpoint returns NOT_AVAILABLE.</p></article>
+        <article class="formula-card"><span>TAKT / JIT</span><div class="formula">Takt = Available time / Demand</div><div class="formula small-formula">Latest release = Due − Remaining touch − Buffer</div><p>Explicit release timing; no demand signal is fabricated.</p></article>
+        <article class="formula-card"><span>PROCESS CYCLE EFFICIENCY</span><div class="formula">PCE = Value-added time / Total lead time</div><p>Lean flow measure tied to actual lead-time decomposition.</p></article>
+        <article class="formula-card"><span>SPC · INDIVIDUALS / MR</span><div class="formula">σ̂ = MR̄ / 1.128</div><div class="formula small-formula">UCL/LCL = X̄ ± 3σ̂</div><p>Repeated observed-cycle measurements are required before live SPC is claimed.</p></article>
+        <article class="formula-card"><span>2<sup>k</sup> DOE</span><div class="formula">Effect = 2 · mean(x<sub>term</sub> · y)</div><p>Balanced −1/+1 main and two-way interaction contrasts quantify variability/reliability sensitivity.</p></article>
+      </div>
+      <div class="method-callout"><strong>TOC / DBR / CONWIP.</strong> The static/dynamic constraint drives the drum; the rope schedules release against the constraint buffer; CONWIP caps admitted shop-floor WIP inside the DES rather than merely displaying a WIP target.</div>
+    </section>
+
+    <section class="method-section" id="ai-methods">
+      <div class="method-section-heading"><span class="section-kicker">C · ARTIFICIAL INTELLIGENCE</span><h2>Different operational tasks, different targets and baselines</h2></div>
+      <div class="model-table-wrap">
+        <table class="model-table">
+          <thead><tr><th>Task</th><th>Production model</th><th>Target</th><th>Primary evidence</th><th>Decision use</th></tr></thead>
+          <tbody>
+            <tr><td>Lateness risk</td><td>StandardScaler + Logistic Regression</td><td>Late under SPT status quo</td><td id="lateEvidence">loading…</td><td>Risk-weights job tardiness in recovery MILP</td></tr>
+            <tr><td>Remaining cycle time</td><td>Standardized Ridge</td><td>Future job flow time</td><td id="cycleEvidence">loading…</td><td>Expected remaining-flow consequence / horizon</td></tr>
+            <tr><td>Future bottleneck</td><td>Standardized Logistic Classifier</td><td>Next machine with highest utilization+downtime pressure</td><td id="bottleneckEvidence">loading…</td><td>Robust buffer allocation / default stress target</td></tr>
+            <tr><td>Operational anomaly</td><td>Isolation Forest</td><td>Deviation from generated normal operating envelope</td><td id="anomalyEvidence">loading…</td><td>Forces human review and machine stress priority</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="boundary-note">The models are selected against explicit baselines/challengers. All published predictive metrics are SYNTHETIC VALIDATION until real plant historical data is available.</p>
+    </section>
+
+    <section class="method-section" id="or-math">
+      <div class="method-section-heading"><span class="section-kicker">D · OPERATIONS RESEARCH</span><h2>Finite-capacity scheduling, robustness and stochastic policy selection</h2></div>
+      <div class="formula-grid wide-formulas">
+        <article class="formula-card"><span>NOMINAL JOB-SHOP MILP</span><div class="formula">min αC<sub>max</sub> + Σ<sub>j</sub> w<sub>j</sub>(β + γr<sub>j</sub>)T<sub>j</sub></div><p>Start times, binary same-machine order variables, tardiness and makespan; precedence, release and disjunctive non-overlap constraints.</p></article>
+        <article class="formula-card"><span>NO-REGRET SERVICE GUARD</span><div class="formula">Σ<sub>j</sub>T<sub>j</sub> ≤ T<sub>SPT baseline</sub></div><p>AI may redistribute tardiness toward higher-risk jobs but cannot silently worsen aggregate nominal tardiness versus the explicit status quo.</p></article>
+        <article class="formula-card"><span>BOX-ROBUST PROCESSING</span><div class="formula">p′<sub>o</sub> = p<sub>o</sub>(1 + δ<sub>m</sub>)</div><p>Machine-specific bounded inflation; predicted bottleneck probability can allocate stronger protection.</p></article>
+        <article class="formula-card"><span>MULTI-OBJECTIVE FRONTIER</span><div class="formula">f = (C<sub>max</sub>, ΣT<sub>j</sub>, Σr<sub>j</sub>T<sub>j</sub>)</div><p>Multiple scalarizations are independently feasibility-checked and filtered for three-dimensional nondominance.</p></article>
+        <article class="formula-card span-two"><span>SCENARIO-BASED CVaR POLICY MILP</span><div class="formula">min Σ<sub>p</sub>x<sub>p</sub>E[L<sub>p</sub>] + λ[η + 1/((1−α)N) Σ<sub>s</sub>u<sub>s</sub>]</div><div class="formula small-formula">Σx<sub>p</sub>=1 &nbsp;&nbsp;·&nbsp;&nbsp; u<sub>s</sub> ≥ ΣL<sub>p,s</sub>x<sub>p</sub> − η &nbsp;&nbsp;·&nbsp;&nbsp; x<sub>p</sub>∈{0,1}</div><p>Monte Carlo produces common-random-number scenario losses; the MILP selects one policy. Exact enumeration of every candidate policy independently verifies the optimum.</p></article>
+      </div>
+      <div class="method-callout"><strong>Solver truth contract.</strong> Termination and physical feasibility are separate. A complete TIME_LIMIT incumbent may be independently validated and used as feasible evidence, but it is never represented as optimal. Gurobi is primary on Windows; HiGHS and the solver-independent validator provide independent evidence.</div>
+    </section>
+
+    <section class="method-section" id="simulation">
+      <div class="method-section-heading"><span class="section-kicker">E · STOCHASTIC DIGITAL TWIN</span><h2>Discrete events, common random numbers and tail risk</h2></div>
+      <div class="method-columns">
+        <div class="method-copy"><p>The custom DES explicitly models job release, queueing, operation start/completion, stochastic processing, machine failure, repair, preempt-resume interruption, downtime intervals and CONWIP admission.</p><p>SPT, EDD, nominal AI-risk and box-robust schedules receive the same seed set so policy differences are not confounded by different random futures.</p></div>
+        <div class="formula-card"><span>TAIL-RISK EVIDENCE</span><div class="formula">CVaR<sub>95</sub>(Tardiness)</div><p>Policy selection uses both expected tardiness and the mean of the worst modeled tail beyond the 95% VaR threshold. Confidence intervals and P95 outcomes remain descriptive simulation evidence.</p></div>
+      </div>
+    </section>
+
+    <section class="method-section" id="copilot">
+      <div class="method-section-heading"><span class="section-kicker">F · EXPLAINABILITY &amp; COPILOT</span><h2>LLM above the deterministic engineering stack</h2></div>
+      <div class="method-columns">
+        <div class="method-copy"><p>Gemini converts natural-language scenario intent into typed, bounded parameters and explains evidence already produced by the twin, AI, IE, optimization and simulation engines.</p><p>It does not create solver objectives, fabricate metrics, replace numerical validation or execute production actions.</p></div>
+        <div class="formula-card"><span>HUMAN GOVERNANCE</span><div class="formula">Recommendation ≠ Execution</div><p>Every operational recommendation carries rationale, assumptions, uncertainty, modeled impact, trade-offs, evidence level and an explicit APPROVED / REJECTED / DEFERRED disposition.</p></div>
+      </div>
+    </section>
+
+    <section class="method-section validation-boundary" id="validation">
+      <div class="method-section-heading"><span class="section-kicker">G · VALIDATION BOUNDARY</span><h2>What is proven here—and what still requires a real plant</h2></div>
+      <div class="boundary-grid">
+        <div><strong>Validated in the repository</strong><ul><li>event-state replay and twin invariants</li><li>IE reference mathematics</li><li>synthetic AI holdouts and baselines</li><li>Gurobi/HiGHS scheduling evidence and independent feasibility checks</li><li>deterministic DES bridge and stochastic invariants</li><li>robust/Pareto/stochastic decision logic</li><li>Windows runtime and clean-extraction release behavior</li></ul></div>
+        <div><strong>External validation pending</strong><ul><li>named-plant MES/ERP/SCADA mappings</li><li>plant-calibrated processing/failure distributions</li><li>historical predictive validation and drift monitoring</li><li>real OEE/SPC/takt signals</li><li>site acceptance and realized operational impact</li></ul></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer"><div><strong>METHODS ARE CODE-BACKED</strong><span>See <code>docs/TECHNICAL_METHODS.md</code> and <code>docs/CONSTITUTION_TRACEABILITY.md</code> for repository-level evidence.</span></div><div class="footer-links"><a href="/workspace">Workbench</a><a href="/docs">API</a></div></footer>
+  <script type="module" src="/workspace/assets/methodology.js"></script>
+</body>
+</html>

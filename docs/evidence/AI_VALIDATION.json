@@ -1,0 +1,62 @@
+{
+  "evidence_label": "SYNTHETIC VALIDATION",
+  "seed": 20260815,
+  "scenarios": {
+    "total": 300,
+    "train": 180,
+    "validation": 60,
+    "test": 60
+  },
+  "records": {
+    "train": 1080,
+    "validation": 360,
+    "test": 360
+  },
+  "positive_rate": {
+    "train": 0.2518518518518518,
+    "test": 0.2722222222222222
+  },
+  "production_model": {
+    "name": "standardized logistic regression",
+    "accuracy": 0.9194444444444444,
+    "f1": 0.8465608465608465,
+    "brier": 0.05977658379588602,
+    "ece_10_bin": 0.01891386910278681,
+    "roc_auc": 0.9717635145661319,
+    "pr_auc": 0.9360964346877182
+  },
+  "nonlinear_challenger": {
+    "name": "histogram gradient boosting",
+    "accuracy": 0.9138888888888889,
+    "f1": 0.8342245989304813,
+    "brier": 0.07008952348493615,
+    "ece_10_bin": 0.059104667459377806,
+    "roc_auc": 0.9664667393675028,
+    "pr_auc": 0.9283936594813393
+  },
+  "class_prior_baseline": {
+    "accuracy": 0.7277777777777777,
+    "f1": 0.0,
+    "brier": 0.19853223593964336,
+    "ece_10_bin": 0.020370370370370317,
+    "roc_auc": 0.5,
+    "pr_auc": 0.2722222222222222
+  },
+  "model_selection": "production model selected by grouped holdout evidence; nonlinear challenger is retained only as benchmark evidence",
+  "feature_names": [
+    "release_time",
+    "due_allowance",
+    "total_work",
+    "mean_operation_time",
+    "max_operation_time",
+    "critical_ratio",
+    "bottleneck_operation_time",
+    "bottleneck_work_share",
+    "system_bottleneck_load",
+    "system_mean_machine_load",
+    "due_tightness"
+  ],
+  "calibration": "probability quality assessed on untouched test scenarios using Brier score and 10-bin ECE",
+  "decision_use": "estimated lateness probability weights job tardiness in the recovery scheduling objective",
+  "limitations": "trained and tested only on generated perturbations of the public FT06 benchmark; not plant-calibrated"
+}

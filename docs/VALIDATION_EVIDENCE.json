@@ -1,0 +1,1019 @@
+{
+  "release": "V1.0",
+  "version": "1.0.0",
+  "evidence_policy": "Observed/ingested twin state, predicted values, optimized decisions and simulated outcomes are labeled separately. External plant validation remains pending.",
+  "synchronized_twin_decision": {
+    "planning_state": {
+      "source": "SYNCHRONIZED_TWIN_STATE",
+      "twin_timestamp": 1.0,
+      "twin_event_count": 5,
+      "twin_state_id": "78cf8ce973e41690",
+      "completed_jobs": [],
+      "completed_operations": 1,
+      "frozen_operations": [
+        {
+          "operation_id": "J1-O0",
+          "job_id": "J1",
+          "machine_id": "M1",
+          "sequence": 0,
+          "start": 1.0,
+          "finish": 9.0
+        }
+      ],
+      "projected_frozen_job_completion": {},
+      "schedulable_jobs": 6,
+      "schedulable_operations": 34,
+      "machine_available_from": {
+        "M1": 9.0,
+        "M4": 1.0,
+        "M3": 1.0,
+        "M0": 1.0,
+        "M5": 1.0,
+        "M2": 1.0
+      },
+      "assumptions": [
+        "running operations use nominal remaining processing time until plant-calibrated remaining-time estimates are available"
+      ]
+    },
+    "nominal_solver": {
+      "backend": "scipy-highs",
+      "status": "OPTIMAL",
+      "objective_value": 30.462592457390333,
+      "best_bound": 30.462592457390333,
+      "mip_gap": 0.0,
+      "solve_time_seconds": 2.3542067610032973,
+      "raw_status": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+    },
+    "robust_solver": {
+      "backend": "scipy-highs",
+      "status": "OPTIMAL",
+      "objective_value": 69.099681312351,
+      "best_bound": 69.099681312351,
+      "mip_gap": 0.0,
+      "solve_time_seconds": 1.9244668960018316,
+      "raw_status": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+    },
+    "pareto_points": [
+      {
+        "makespan_weight": 1.0,
+        "tardiness_weight": 0.0,
+        "risk_tardiness_weight": 1.0,
+        "makespan": 61.0,
+        "total_tardiness": 20.0,
+        "risk_weighted_tardiness": 5.617988129786859,
+        "backend": "scipy-highs",
+        "status": "OPTIMAL",
+        "objective_value": 66.61798812978685,
+        "optimality_proven": true
+      },
+      {
+        "makespan_weight": 0.05,
+        "tardiness_weight": 1.0,
+        "risk_tardiness_weight": 1.0,
+        "makespan": 64.0,
+        "total_tardiness": 18.000000000000014,
+        "risk_weighted_tardiness": 4.631296228695182,
+        "backend": "scipy-highs",
+        "status": "OPTIMAL",
+        "objective_value": 25.831296228695187,
+        "optimality_proven": true
+      }
+    ],
+    "decision_contract": {
+      "action": "stage BOX_ROBUST_AI schedule for stochastic validation and human approval",
+      "recommended_schedule": "BOX_ROBUST_AI",
+      "rationale": "The decision is generated from the synchronized residual twin. Lateness risk weights customer tardiness; the bottleneck model identifies M5 as the most likely future constraint; a bounded robust counterpart protects processing-time uncertainty.",
+      "expected_modeled_impact": {
+        "baseline_spt_makespan": 69.0,
+        "baseline_spt_total_tardiness": 33.5,
+        "nominal_no_regret_tardiness_cap": 33.5,
+        "nominal_optimized_makespan": 64.00000000000003,
+        "nominal_optimized_total_tardiness": 17.99999999999998,
+        "box_robust_makespan_upper_bound_schedule": 78.33035764171959,
+        "box_robust_total_tardiness_upper_bound_schedule": 45.35018339846332,
+        "label": "MODELED / OPTIMIZED BENCHMARK CONSEQUENCE \u2014 NOT REALIZED BENEFIT"
+      },
+      "uncertainty": {
+        "processing_cv_scenario_assumption": 0.1,
+        "bottleneck_probability": 0.43427208068092527,
+        "robust_uncertainty_set": "box uncertainty: each processing time may increase independently up to its configured relative buffer",
+        "model_evidence": "all predictive models are synthetically validated; external plant calibration pending"
+      },
+      "assumptions": [
+        "running operations use nominal remaining processing time until plant-calibrated remaining-time estimates are available",
+        "processing-time robust buffers are derived from the configured variability scenario and bottleneck-risk allocation",
+        "box robustness is conservative and does not substitute for stochastic simulation"
+      ],
+      "trade_offs": [
+        "the robust schedule may sacrifice nominal makespan/tardiness to protect bounded processing-time uncertainty",
+        "a Pareto frontier is provided because throughput horizon and customer tardiness are competing objectives",
+        "machine anomaly flags require human review rather than automatic execution"
+      ],
+      "human_review_required": true,
+      "human_review_reasons": [
+        "all optimized/simulated manufacturing recommendations require explicit human approval before execution"
+      ],
+      "human_disposition": "pending",
+      "evidence_level": "SYNCHRONIZED TWIN + SYNTHETICALLY VALIDATED AI + VERIFIED OR; EXTERNAL VALIDATION PENDING"
+    }
+  },
+  "artificial_intelligence": {
+    "lateness": {
+      "name": "standardized logistic regression",
+      "accuracy": 0.9194444444444444,
+      "f1": 0.8465608465608465,
+      "brier": 0.05977658379588602,
+      "ece_10_bin": 0.01891386910278681,
+      "roc_auc": 0.9717635145661319,
+      "pr_auc": 0.9360964346877182
+    },
+    "cycle_time": {
+      "name": "standardized ridge regression",
+      "mae": 7.077706556825054,
+      "rmse": 8.786093453959364,
+      "r2": 0.5433428569447867
+    },
+    "cycle_time_baseline": {
+      "name": "total remaining work as flow-time estimate",
+      "mae": 15.099651408656129,
+      "rmse": 17.594210255789328,
+      "r2": -0.8312100948288659
+    },
+    "bottleneck": {
+      "name": "standardized logistic classifier",
+      "top1_accuracy": 0.6666666666666666,
+      "roc_auc": 0.934375,
+      "pr_auc": 0.7847887285922741
+    },
+    "bottleneck_baseline": {
+      "top1_accuracy": 0.625
+    },
+    "anomaly": {
+      "name": "Isolation Forest",
+      "roc_auc": 0.9683487654320988,
+      "pr_auc": 0.9539466712203124
+    },
+    "anomaly_baseline": {
+      "roc_auc": 0.6902777777777778,
+      "pr_auc": 0.6902777777777778
+    },
+    "predicted_bottleneck": "M5"
+  },
+  "industrial_engineering": {
+    "takt_reference": 2.0,
+    "oee_reference": 0.8464499999999999,
+    "pce_reference": 0.2,
+    "jit_latest_release_reference": 75.0,
+    "m5_capacity": {
+      "machine_id": "M5",
+      "workload": 43.0,
+      "effective_available_time": 90.0,
+      "load_ratio": 0.4777777777777778,
+      "capacity_gap": 47.0
+    },
+    "dbr_constraint": "M5",
+    "dbr_release_plan": [
+      {
+        "job_id": "J4",
+        "constraint_machine_id": "M5",
+        "work_before_constraint": 17.0,
+        "drum_start": 17.0,
+        "drum_finish": 21.0,
+        "rope_release_time": 0.0,
+        "buffer_time": 5.0
+      },
+      {
+        "job_id": "J0",
+        "constraint_machine_id": "M5",
+        "work_before_constraint": 17.0,
+        "drum_start": 21.0,
+        "drum_finish": 24.0,
+        "rope_release_time": 0.0,
+        "buffer_time": 5.0
+      },
+      {
+        "job_id": "J5",
+        "constraint_machine_id": "M5",
+        "work_before_constraint": 6.0,
+        "drum_start": 24.0,
+        "drum_finish": 33.0,
+        "rope_release_time": 13.0,
+        "buffer_time": 5.0
+      },
+      {
+        "job_id": "J2",
+        "constraint_machine_id": "M5",
+        "work_before_constraint": 9.0,
+        "drum_start": 33.0,
+        "drum_finish": 41.0,
+        "rope_release_time": 19.0,
+        "buffer_time": 5.0
+      },
+      {
+        "job_id": "J3",
+        "constraint_machine_id": "M5",
+        "work_before_constraint": 26.0,
+        "drum_start": 41.0,
+        "drum_finish": 50.0,
+        "rope_release_time": 10.0,
+        "buffer_time": 5.0
+      },
+      {
+        "job_id": "J1",
+        "constraint_machine_id": "M5",
+        "work_before_constraint": 23.0,
+        "drum_start": 50.0,
+        "drum_finish": 60.0,
+        "rope_release_time": 22.0,
+        "buffer_time": 5.0
+      }
+    ],
+    "conwip_wip_limit": 3,
+    "conwip_observed_peak_wip": 3,
+    "spc": {
+      "center_line": 1.1666666666666667,
+      "moving_range_bar": 0.21800000000000003,
+      "sigma_estimate": 0.19326241134751776,
+      "ucl": 1.74645390070922,
+      "lcl": 0.5868794326241135,
+      "out_of_control_indices": [
+        5
+      ]
+    },
+    "doe_effects": [
+      {
+        "term": "MTBF",
+        "effect": -51.588079670517835
+      },
+      {
+        "term": "MTTR",
+        "effect": 120.28547024630137
+      },
+      {
+        "term": "PROCESS_CV",
+        "effect": 14.287161151051052
+      },
+      {
+        "term": "MTBF*MTTR",
+        "effect": -38.36025152789289
+      },
+      {
+        "term": "MTBF*PROCESS_CV",
+        "effect": -1.8722812227051193
+      },
+      {
+        "term": "MTTR*PROCESS_CV",
+        "effect": 7.669485578797328
+      }
+    ],
+    "doe_runs": [
+      {
+        "process_cv": 0.05,
+        "mtbf": 45.0,
+        "mttr": 4.0,
+        "total_tardiness": 67.49255894630143
+      },
+      {
+        "process_cv": 0.05,
+        "mtbf": 45.0,
+        "mttr": 12.0,
+        "total_tardiness": 213.12991204102727
+      },
+      {
+        "process_cv": 0.05,
+        "mtbf": 120.0,
+        "mttr": 4.0,
+        "total_tardiness": 50.79812892571049
+      },
+      {
+        "process_cv": 0.05,
+        "mtbf": 120.0,
+        "mttr": 12.0,
+        "total_tardiness": 130.39274516599278
+      },
+      {
+        "process_cv": 0.2,
+        "mtbf": 45.0,
+        "mttr": 4.0,
+        "total_tardiness": 70.64363264058919
+      },
+      {
+        "process_cv": 0.2,
+        "mtbf": 45.0,
+        "mttr": 12.0,
+        "total_tardiness": 242.2977230942519
+      },
+      {
+        "process_cv": 0.2,
+        "mtbf": 120.0,
+        "mttr": 4.0,
+        "total_tardiness": 60.88240637593023
+      },
+      {
+        "process_cv": 0.2,
+        "mtbf": 120.0,
+        "mttr": 12.0,
+        "total_tardiness": 145.13822757246493
+      }
+    ]
+  },
+  "operations_research": {
+    "nominal": {
+      "makespan": 64.00000000000003,
+      "total_tardiness": 17.99999999999998,
+      "objective_components": {
+        "makespan": 64.00000000000003,
+        "total_tardiness": 17.99999999999998,
+        "risk_weighted_tardiness": 4.6312962286951755
+      },
+      "solver": {
+        "backend": "scipy-highs",
+        "status": "OPTIMAL",
+        "objective_value": 30.462592457390333,
+        "best_bound": 30.462592457390333,
+        "mip_gap": 0.0,
+        "solve_time_seconds": 2.3542067610032973,
+        "raw_status": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+      },
+      "solution_quality": {
+        "termination_status": "OPTIMAL",
+        "has_incumbent": true,
+        "complete_incumbent": true,
+        "feasible": true,
+        "optimality_proven": true,
+        "quality": "OPTIMAL",
+        "mip_gap": 0.0,
+        "violations": []
+      },
+      "violations": [],
+      "operations": [
+        {
+          "operation_id": "J0-O1",
+          "job_id": "J0",
+          "machine_id": "M0",
+          "sequence": 1,
+          "start": 0.9999999999999858,
+          "finish": 3.999999999999986
+        },
+        {
+          "operation_id": "J0-O2",
+          "job_id": "J0",
+          "machine_id": "M1",
+          "sequence": 2,
+          "start": 12.000000000000004,
+          "finish": 18.000000000000004
+        },
+        {
+          "operation_id": "J0-O3",
+          "job_id": "J0",
+          "machine_id": "M3",
+          "sequence": 3,
+          "start": 18.000000000000004,
+          "finish": 25.000000000000004
+        },
+        {
+          "operation_id": "J0-O4",
+          "job_id": "J0",
+          "machine_id": "M5",
+          "sequence": 4,
+          "start": 27.0,
+          "finish": 30.0
+        },
+        {
+          "operation_id": "J0-O5",
+          "job_id": "J0",
+          "machine_id": "M4",
+          "sequence": 5,
+          "start": 31.00000000000001,
+          "finish": 37.000000000000014
+        },
+        {
+          "operation_id": "J1-O1",
+          "job_id": "J1",
+          "machine_id": "M2",
+          "sequence": 1,
+          "start": 9.000000000000004,
+          "finish": 14.000000000000004
+        },
+        {
+          "operation_id": "J1-O2",
+          "job_id": "J1",
+          "machine_id": "M4",
+          "sequence": 2,
+          "start": 14.000000000000007,
+          "finish": 24.000000000000007
+        },
+        {
+          "operation_id": "J1-O3",
+          "job_id": "J1",
+          "machine_id": "M5",
+          "sequence": 3,
+          "start": 34.99999999999993,
+          "finish": 44.99999999999993
+        },
+        {
+          "operation_id": "J1-O4",
+          "job_id": "J1",
+          "machine_id": "M0",
+          "sequence": 4,
+          "start": 50.00000000000002,
+          "finish": 60.00000000000002
+        },
+        {
+          "operation_id": "J1-O5",
+          "job_id": "J1",
+          "machine_id": "M3",
+          "sequence": 5,
+          "start": 60.00000000000002,
+          "finish": 64.00000000000003
+        },
+        {
+          "operation_id": "J2-O0",
+          "job_id": "J2",
+          "machine_id": "M2",
+          "sequence": 0,
+          "start": 1.0000000000000033,
+          "finish": 6.0000000000000036
+        },
+        {
+          "operation_id": "J2-O1",
+          "job_id": "J2",
+          "machine_id": "M3",
+          "sequence": 1,
+          "start": 6.0,
+          "finish": 10.0
+        },
+        {
+          "operation_id": "J2-O2",
+          "job_id": "J2",
+          "machine_id": "M5",
+          "sequence": 2,
+          "start": 10.0,
+          "finish": 18.0
+        },
+        {
+          "operation_id": "J2-O3",
+          "job_id": "J2",
+          "machine_id": "M0",
+          "sequence": 3,
+          "start": 28.00000000000001,
+          "finish": 37.000000000000014
+        },
+        {
+          "operation_id": "J2-O4",
+          "job_id": "J2",
+          "machine_id": "M1",
+          "sequence": 4,
+          "start": 37.000000000000014,
+          "finish": 38.000000000000014
+        },
+        {
+          "operation_id": "J2-O5",
+          "job_id": "J2",
+          "machine_id": "M4",
+          "sequence": 5,
+          "start": 45.000000000000014,
+          "finish": 52.000000000000014
+        },
+        {
+          "operation_id": "J3-O0",
+          "job_id": "J3",
+          "machine_id": "M1",
+          "sequence": 0,
+          "start": 18.00000000000001,
+          "finish": 23.00000000000001
+        },
+        {
+          "operation_id": "J3-O1",
+          "job_id": "J3",
+          "machine_id": "M0",
+          "sequence": 1,
+          "start": 23.00000000000001,
+          "finish": 28.00000000000001
+        },
+        {
+          "operation_id": "J3-O2",
+          "job_id": "J3",
+          "machine_id": "M2",
+          "sequence": 2,
+          "start": 28.00000000000001,
+          "finish": 33.000000000000014
+        },
+        {
+          "operation_id": "J3-O3",
+          "job_id": "J3",
+          "machine_id": "M3",
+          "sequence": 3,
+          "start": 33.000000000000014,
+          "finish": 36.000000000000014
+        },
+        {
+          "operation_id": "J3-O4",
+          "job_id": "J3",
+          "machine_id": "M4",
+          "sequence": 4,
+          "start": 37.000000000000014,
+          "finish": 45.000000000000014
+        },
+        {
+          "operation_id": "J3-O5",
+          "job_id": "J3",
+          "machine_id": "M5",
+          "sequence": 5,
+          "start": 44.99999999999993,
+          "finish": 53.99999999999993
+        },
+        {
+          "operation_id": "J4-O0",
+          "job_id": "J4",
+          "machine_id": "M2",
+          "sequence": 0,
+          "start": 14.000000000000004,
+          "finish": 23.000000000000004
+        },
+        {
+          "operation_id": "J4-O1",
+          "job_id": "J4",
+          "machine_id": "M1",
+          "sequence": 1,
+          "start": 23.00000000000001,
+          "finish": 26.00000000000001
+        },
+        {
+          "operation_id": "J4-O2",
+          "job_id": "J4",
+          "machine_id": "M4",
+          "sequence": 2,
+          "start": 26.00000000000001,
+          "finish": 31.00000000000001
+        },
+        {
+          "operation_id": "J4-O3",
+          "job_id": "J4",
+          "machine_id": "M5",
+          "sequence": 3,
+          "start": 30.999999999999925,
+          "finish": 34.99999999999993
+        },
+        {
+          "operation_id": "J4-O4",
+          "job_id": "J4",
+          "machine_id": "M0",
+          "sequence": 4,
+          "start": 37.000000000000014,
+          "finish": 40.000000000000014
+        },
+        {
+          "operation_id": "J4-O5",
+          "job_id": "J4",
+          "machine_id": "M3",
+          "sequence": 5,
+          "start": 40.000000000000014,
+          "finish": 41.000000000000014
+        },
+        {
+          "operation_id": "J5-O0",
+          "job_id": "J5",
+          "machine_id": "M1",
+          "sequence": 0,
+          "start": 9.000000000000002,
+          "finish": 12.000000000000002
+        },
+        {
+          "operation_id": "J5-O1",
+          "job_id": "J5",
+          "machine_id": "M3",
+          "sequence": 1,
+          "start": 12.0,
+          "finish": 15.0
+        },
+        {
+          "operation_id": "J5-O2",
+          "job_id": "J5",
+          "machine_id": "M5",
+          "sequence": 2,
+          "start": 18.0,
+          "finish": 27.0
+        },
+        {
+          "operation_id": "J5-O3",
+          "job_id": "J5",
+          "machine_id": "M0",
+          "sequence": 3,
+          "start": 40.00000000000002,
+          "finish": 50.00000000000002
+        },
+        {
+          "operation_id": "J5-O4",
+          "job_id": "J5",
+          "machine_id": "M4",
+          "sequence": 4,
+          "start": 52.00000000000002,
+          "finish": 56.00000000000002
+        },
+        {
+          "operation_id": "J5-O5",
+          "job_id": "J5",
+          "machine_id": "M2",
+          "sequence": 5,
+          "start": 56.00000000000002,
+          "finish": 57.00000000000002
+        }
+      ]
+    },
+    "box_robust": {
+      "uncertainty": {
+        "uncertainty_set": "box uncertainty: each processing time may increase independently up to its configured relative buffer",
+        "default_relative_buffer": 0.1,
+        "machine_relative_buffer": {
+          "M0": 0.1513567589298942,
+          "M1": 0.10150116287944254,
+          "M2": 0.10605353675592102,
+          "M3": 0.10287736636866306,
+          "M4": 0.1513567589298942,
+          "M5": 0.18685441613618506
+        },
+        "solver_status": "OPTIMAL",
+        "feasible_incumbent": true,
+        "optimality_proven": true,
+        "robust_violations": 0
+      },
+      "makespan": 78.33035764171959,
+      "total_tardiness": 45.35018339846332,
+      "solver": {
+        "backend": "scipy-highs",
+        "status": "OPTIMAL",
+        "objective_value": 69.099681312351,
+        "best_bound": 69.099681312351,
+        "mip_gap": 0.0,
+        "solve_time_seconds": 1.9244668960018316,
+        "raw_status": "Optimization terminated successfully. (HiGHS Status 7: Optimal)"
+      },
+      "solution_quality": {
+        "termination_status": "OPTIMAL",
+        "has_incumbent": true,
+        "complete_incumbent": true,
+        "feasible": true,
+        "optimality_proven": true,
+        "quality": "OPTIMAL",
+        "mip_gap": 0.0,
+        "violations": []
+      },
+      "violations": [],
+      "operations": [
+        {
+          "operation_id": "J0-O1",
+          "job_id": "J0",
+          "machine_id": "M0",
+          "sequence": 1,
+          "start": 5.545929723209873,
+          "finish": 8.999999999999556
+        },
+        {
+          "operation_id": "J0-O2",
+          "job_id": "J0",
+          "machine_id": "M1",
+          "sequence": 2,
+          "start": 8.999999999999556,
+          "finish": 15.609006977276211
+        },
+        {
+          "operation_id": "J0-O3",
+          "job_id": "J0",
+          "machine_id": "M3",
+          "sequence": 3,
+          "start": 15.609006977276211,
+          "finish": 23.329148541856853
+        },
+        {
+          "operation_id": "J0-O4",
+          "job_id": "J0",
+          "machine_id": "M5",
+          "sequence": 4,
+          "start": 23.329148541856853,
+          "finish": 26.88971179026541
+        },
+        {
+          "operation_id": "J0-O5",
+          "job_id": "J0",
+          "machine_id": "M4",
+          "sequence": 5,
+          "start": 26.88971179026541,
+          "finish": 33.797852343844774
+        },
+        {
+          "operation_id": "J1-O1",
+          "job_id": "J1",
+          "machine_id": "M2",
+          "sequence": 1,
+          "start": 16.48474951458285,
+          "finish": 22.015017198362457
+        },
+        {
+          "operation_id": "J1-O2",
+          "job_id": "J1",
+          "machine_id": "M4",
+          "sequence": 2,
+          "start": 33.797852343845214,
+          "finish": 45.31141993314416
+        },
+        {
+          "operation_id": "J1-O3",
+          "job_id": "J1",
+          "machine_id": "M5",
+          "sequence": 3,
+          "start": 45.31141993314416,
+          "finish": 57.17996409450601
+        },
+        {
+          "operation_id": "J1-O4",
+          "job_id": "J1",
+          "machine_id": "M0",
+          "sequence": 4,
+          "start": 57.17996409450601,
+          "finish": 68.69353168380496
+        },
+        {
+          "operation_id": "J1-O5",
+          "job_id": "J1",
+          "machine_id": "M3",
+          "sequence": 5,
+          "start": 68.69353168380496,
+          "finish": 73.10504114927961
+        },
+        {
+          "operation_id": "J2-O0",
+          "job_id": "J2",
+          "machine_id": "M2",
+          "sequence": 0,
+          "start": 0.9999999999999813,
+          "finish": 6.530267683779586
+        },
+        {
+          "operation_id": "J2-O1",
+          "job_id": "J2",
+          "machine_id": "M3",
+          "sequence": 1,
+          "start": 6.530267683779616,
+          "finish": 10.941777149254268
+        },
+        {
+          "operation_id": "J2-O2",
+          "job_id": "J2",
+          "machine_id": "M5",
+          "sequence": 2,
+          "start": 10.94177714925427,
+          "finish": 20.43661247834375
+        },
+        {
+          "operation_id": "J2-O3",
+          "job_id": "J2",
+          "machine_id": "M0",
+          "sequence": 3,
+          "start": 20.436612478343772,
+          "finish": 30.79882330871282
+        },
+        {
+          "operation_id": "J2-O4",
+          "job_id": "J2",
+          "machine_id": "M1",
+          "sequence": 4,
+          "start": 30.79882330871282,
+          "finish": 31.900324471592263
+        },
+        {
+          "operation_id": "J2-O5",
+          "job_id": "J2",
+          "machine_id": "M4",
+          "sequence": 5,
+          "start": 45.31141993314417,
+          "finish": 53.37091724565343
+        },
+        {
+          "operation_id": "J3-O0",
+          "job_id": "J3",
+          "machine_id": "M1",
+          "sequence": 0,
+          "start": 23.093756491859533,
+          "finish": 28.601262306256746
+        },
+        {
+          "operation_id": "J3-O1",
+          "job_id": "J3",
+          "machine_id": "M0",
+          "sequence": 1,
+          "start": 35.09119973160027,
+          "finish": 40.84798352624974
+        },
+        {
+          "operation_id": "J3-O2",
+          "job_id": "J3",
+          "machine_id": "M2",
+          "sequence": 2,
+          "start": 40.84798352624974,
+          "finish": 46.37825121002935
+        },
+        {
+          "operation_id": "J3-O3",
+          "job_id": "J3",
+          "machine_id": "M3",
+          "sequence": 3,
+          "start": 46.37825121002935,
+          "finish": 49.68688330913534
+        },
+        {
+          "operation_id": "J3-O4",
+          "job_id": "J3",
+          "machine_id": "M4",
+          "sequence": 4,
+          "start": 58.43781382505477,
+          "finish": 67.64866789649392
+        },
+        {
+          "operation_id": "J3-O5",
+          "job_id": "J3",
+          "machine_id": "M5",
+          "sequence": 5,
+          "start": 67.64866789649392,
+          "finish": 78.33035764171959
+        },
+        {
+          "operation_id": "J4-O0",
+          "job_id": "J4",
+          "machine_id": "M2",
+          "sequence": 0,
+          "start": 6.530267683779595,
+          "finish": 16.484749514582884
+        },
+        {
+          "operation_id": "J4-O1",
+          "job_id": "J4",
+          "machine_id": "M1",
+          "sequence": 1,
+          "start": 16.484749514582884,
+          "finish": 19.789253003221212
+        },
+        {
+          "operation_id": "J4-O2",
+          "job_id": "J4",
+          "machine_id": "M4",
+          "sequence": 2,
+          "start": 19.78925300322121,
+          "finish": 25.54603679787068
+        },
+        {
+          "operation_id": "J4-O3",
+          "job_id": "J4",
+          "machine_id": "M5",
+          "sequence": 3,
+          "start": 26.889711790265835,
+          "finish": 31.637129454810577
+        },
+        {
+          "operation_id": "J4-O4",
+          "job_id": "J4",
+          "machine_id": "M0",
+          "sequence": 4,
+          "start": 31.63712945481058,
+          "finish": 35.09119973160026
+        },
+        {
+          "operation_id": "J4-O5",
+          "job_id": "J4",
+          "machine_id": "M3",
+          "sequence": 5,
+          "start": 36.397122633631334,
+          "finish": 37.5
+        },
+        {
+          "operation_id": "J5-O0",
+          "job_id": "J5",
+          "machine_id": "M1",
+          "sequence": 0,
+          "start": 19.789253003223507,
+          "finish": 23.093756491861836
+        },
+        {
+          "operation_id": "J5-O1",
+          "job_id": "J5",
+          "machine_id": "M3",
+          "sequence": 1,
+          "start": 23.329148541856853,
+          "finish": 26.63778064096284
+        },
+        {
+          "operation_id": "J5-O2",
+          "job_id": "J5",
+          "machine_id": "M5",
+          "sequence": 2,
+          "start": 31.637129454810577,
+          "finish": 42.318819200036245
+        },
+        {
+          "operation_id": "J5-O3",
+          "job_id": "J5",
+          "machine_id": "M0",
+          "sequence": 3,
+          "start": 42.318819200036245,
+          "finish": 53.83238678933519
+        },
+        {
+          "operation_id": "J5-O4",
+          "job_id": "J5",
+          "machine_id": "M4",
+          "sequence": 4,
+          "start": 53.83238678933519,
+          "finish": 58.43781382505477
+        },
+        {
+          "operation_id": "J5-O5",
+          "job_id": "J5",
+          "machine_id": "M2",
+          "sequence": 5,
+          "start": 58.43781382505477,
+          "finish": 59.54386736181069
+        }
+      ]
+    },
+    "pareto_frontier": [
+      {
+        "makespan_weight": 1.0,
+        "tardiness_weight": 0.0,
+        "risk_tardiness_weight": 1.0,
+        "makespan": 61.0,
+        "total_tardiness": 20.0,
+        "risk_weighted_tardiness": 5.617988129786859,
+        "backend": "scipy-highs",
+        "status": "OPTIMAL",
+        "objective_value": 66.61798812978685,
+        "optimality_proven": true
+      },
+      {
+        "makespan_weight": 0.05,
+        "tardiness_weight": 1.0,
+        "risk_tardiness_weight": 1.0,
+        "makespan": 64.0,
+        "total_tardiness": 18.000000000000014,
+        "risk_weighted_tardiness": 4.631296228695182,
+        "backend": "scipy-highs",
+        "status": "OPTIMAL",
+        "objective_value": 25.831296228695187,
+        "optimality_proven": true
+      }
+    ],
+    "simulation_optimized_policy": "EDD_DISPATCH",
+    "stochastic_policy_selection": {
+      "selected_policy": "EDD_DISPATCH",
+      "expected_total_tardiness": 111.71396378348169,
+      "cvar95_total_tardiness": 166.91095835606393,
+      "objective_value": 170.13279920810407,
+      "solver": {
+        "backend": "scipy-highs",
+        "status": "OPTIMAL",
+        "best_bound": 170.13279920810407,
+        "mip_gap": 0.0,
+        "solve_time_seconds": 0.0014714810022269376,
+        "oracle_selected_policy": "EDD_DISPATCH",
+        "oracle_objective": 170.13279920810407
+      }
+    },
+    "simulation_policy_count": 4
+  },
+  "auditability": {
+    "run_id": "365d9041-7b58-4adb-80b1-210019c5104c",
+    "saved_runs": 1,
+    "human_disposition": {
+      "run_id": "365d9041-7b58-4adb-80b1-210019c5104c",
+      "human_disposition": "approved",
+      "disposition_note": "diagnostic approval path"
+    }
+  },
+  "checks": {
+    "twin_state_is_nonzero": true,
+    "completed_work_removed_from_or": true,
+    "running_work_frozen": true,
+    "nominal_or_feasible": true,
+    "box_robust_or_feasible": true,
+    "robust_status_truthful": true,
+    "pareto_frontier_present": true,
+    "pareto_status_truthful": true,
+    "pareto_nondominated_3d": true,
+    "four_policy_stress_test": true,
+    "stochastic_policy_milp_verified": true,
+    "conwip_cap_respected": true,
+    "dbr_constraint_is_m5": true,
+    "spc_detects_injected_excursion": true,
+    "decision_run_persisted": true,
+    "human_disposition_persisted": true,
+    "lateness_beats_prior_baseline": true,
+    "cycle_time_beats_touch_time_baseline": true,
+    "bottleneck_beats_static_baseline": true,
+    "anomaly_beats_simple_threshold": true,
+    "v1_version_normalized": true,
+    "constitution_traceability_resolved": true,
+    "final_quality_gate_25_of_25": true,
+    "methodology_product_present": true,
+    "final_frontend_decision_workflow_present": true
+  },
+  "status": "PASS"
+}

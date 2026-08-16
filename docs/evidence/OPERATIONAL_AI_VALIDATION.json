@@ -1,0 +1,126 @@
+{
+  "cycle_time": {
+    "evidence_label": "SYNTHETIC VALIDATION",
+    "task": "job cycle-time / remaining flow-time regression under generated benchmark scenarios",
+    "seed": 20260815,
+    "scenarios": {
+      "total": 300,
+      "train": 180,
+      "validation": 60,
+      "test": 60
+    },
+    "production_model": {
+      "name": "standardized ridge regression",
+      "mae": 7.077706556825054,
+      "rmse": 8.786093453959364,
+      "r2": 0.5433428569447867
+    },
+    "touch_time_baseline": {
+      "name": "total remaining work as flow-time estimate",
+      "mae": 15.099651408656129,
+      "rmse": 17.594210255789328,
+      "r2": -0.8312100948288659
+    },
+    "ridge_candidate": {
+      "name": "standardized ridge regression",
+      "mae": 7.077706556825054,
+      "rmse": 8.786093453959364,
+      "r2": 0.5433428569447867
+    },
+    "gradient_boosting_challenger": {
+      "name": "histogram gradient boosting regressor",
+      "mae": 7.081222178921773,
+      "rmse": 9.066107330926206,
+      "r2": 0.5137715897093064
+    },
+    "feature_names": [
+      "release_time",
+      "due_allowance",
+      "total_work",
+      "mean_operation_time",
+      "max_operation_time",
+      "critical_ratio",
+      "bottleneck_operation_time",
+      "bottleneck_work_share",
+      "system_bottleneck_load",
+      "system_mean_machine_load",
+      "due_tightness"
+    ],
+    "decision_use": "provides expected remaining-flow-time consequence and horizon guidance for synchronized-twin rescheduling",
+    "limitations": "synthetic benchmark scenarios only; no plant-calibrated cycle-time distribution"
+  },
+  "bottleneck": {
+    "evidence_label": "SYNTHETIC VALIDATION",
+    "task": "predict the next dynamic machine bottleneck under processing/reliability uncertainty",
+    "seed": 20260815,
+    "scenarios": {
+      "total": 120,
+      "train": 72,
+      "validation": 24,
+      "test": 24
+    },
+    "production_model": {
+      "name": "standardized logistic classifier",
+      "top1_accuracy": 0.6666666666666666,
+      "roc_auc": 0.934375,
+      "pr_auc": 0.7847887285922741
+    },
+    "static_workload_baseline": {
+      "top1_accuracy": 0.625
+    },
+    "linear_candidate": {
+      "name": "standardized logistic classifier",
+      "top1_accuracy": 0.6666666666666666,
+      "roc_auc": 0.934375,
+      "pr_auc": 0.7847887285922741
+    },
+    "nonlinear_candidate": {
+      "name": "histogram gradient boosting classifier",
+      "top1_accuracy": 0.625,
+      "roc_auc": 0.9243055555555556,
+      "pr_auc": 0.7881225859193108
+    },
+    "feature_names": [
+      "nominal_load_share",
+      "operation_count_share",
+      "mean_operation_time",
+      "availability",
+      "processing_cv",
+      "static_constraint_indicator"
+    ],
+    "target": "machine with maximum simulated productive-utilization + downtime pressure index",
+    "decision_use": "selects the machine to stress by default during robust future-state evaluation when no operator override is supplied",
+    "limitations": "target is derived from seeded benchmark simulation, not measured congestion in a real plant"
+  },
+  "anomaly": {
+    "evidence_label": "SYNTHETIC VALIDATION",
+    "task": "unsupervised machine-state anomaly detection with injected synthetic anomalies used only for evaluation",
+    "training": {
+      "normal_records": 840,
+      "contamination_assumption": 0.025
+    },
+    "test": {
+      "normal_records": 360,
+      "injected_anomaly_records": 360
+    },
+    "production_model": {
+      "name": "Isolation Forest",
+      "roc_auc": 0.9683487654320988,
+      "pr_auc": 0.9539466712203124
+    },
+    "downtime_threshold_baseline": {
+      "roc_auc": 0.6902777777777778,
+      "pr_auc": 0.6902777777777778
+    },
+    "feature_names": [
+      "completed_ratio",
+      "mean_cycle_ratio",
+      "downtime_fraction",
+      "ready_queue_fraction",
+      "busy_indicator",
+      "load_share"
+    ],
+    "decision_use": "anomalous synchronized-twin machine states force human review and are prioritized for future-state stress testing",
+    "limitations": "unsupervised model trained on generated normal envelopes; anomaly index is not a probability"
+  }
+}

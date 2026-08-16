@@ -1,0 +1,5 @@
+[
+  {"event_id":"demo-release-j0","event_type":"job_released","timestamp":0,"job_id":"J0"},
+  {"event_id":"demo-start-j0-o0","event_type":"operation_started","timestamp":0,"job_id":"J0","operation_id":"J0-O0","machine_id":"M2"},
+  {"event_id":"demo-complete-j0-o0","event_type":"operation_completed","timestamp":1,"job_id":"J0","operation_id":"J0-O0","machine_id":"M2"}
+]

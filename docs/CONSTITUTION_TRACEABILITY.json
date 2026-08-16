@@ -1,0 +1,424 @@
+{
+  "release": "V1.0",
+  "version": "1.0.0",
+  "policy": "Every governing requirement is resolved as implemented/validated/justified non-separate or explicitly external validation pending; no silent exclusions.",
+  "allowed_statuses": [
+    "IMPLEMENTED",
+    "VALIDATED",
+    "SYNTHETICALLY_VALIDATED",
+    "WINDOWS_VALIDATED",
+    "JUSTIFIED_NON_SEPARATE",
+    "EXTERNAL_VALIDATION_PENDING"
+  ],
+  "requirements": [
+    {
+      "id": "P1",
+      "requirement": "Decision Intelligence First",
+      "status": "IMPLEMENTED",
+      "evidence": "Predictions feed operational recovery, robust scheduling, stochastic policy selection and human disposition."
+    },
+    {
+      "id": "P2",
+      "requirement": "Industrial Engineering First",
+      "status": "VALIDATED",
+      "evidence": "Factory Physics, flow, reliability, ToC/DBR, CONWIP, capacity, SPC and DOE are executable/tested."
+    },
+    {
+      "id": "P3",
+      "requirement": "Digital Twin First",
+      "status": "VALIDATED",
+      "evidence": "AI/OR/simulation consume residual state derived from synchronized TwinSnapshot rather than pristine raw data."
+    },
+    {
+      "id": "P4",
+      "requirement": "Explainability First",
+      "status": "IMPLEMENTED",
+      "evidence": "Decision contract includes rationale, assumptions, uncertainty, expected modeled impact, trade-offs and evidence level."
+    },
+    {
+      "id": "P5",
+      "requirement": "Engineering Before Presentation",
+      "status": "VALIDATED",
+      "evidence": "Core models and independent checks exist below the workspace UI."
+    },
+    {
+      "id": "P6",
+      "requirement": "Enterprise Quality",
+      "status": "IMPLEMENTED",
+      "evidence": "API boundaries, persistence, resource lifecycle, release gates, audit records, docs and Windows acceptance."
+    },
+    {
+      "id": "P7",
+      "requirement": "Research Value",
+      "status": "IMPLEMENTED",
+      "evidence": "Distinct coupling of synchronized twin, operational AI, robust OR, DES and stochastic policy selection."
+    },
+    {
+      "id": "S1",
+      "requirement": "Data ingestion",
+      "status": "IMPLEMENTED",
+      "evidence": "Public benchmark plus canonical manufacturing-event CSV validation/replay."
+    },
+    {
+      "id": "S2",
+      "requirement": "State estimation / reconstruction",
+      "status": "VALIDATED",
+      "evidence": "Event-sourced TwinEngine with deterministic replay and state invariants."
+    },
+    {
+      "id": "S3",
+      "requirement": "Digital twin",
+      "status": "VALIDATED",
+      "evidence": "Current-state reconstruction plus future-state stochastic simulation."
+    },
+    {
+      "id": "S4",
+      "requirement": "Feature engineering",
+      "status": "IMPLEMENTED",
+      "evidence": "Job/system/machine features for lateness, cycle-time, bottleneck and anomaly tasks."
+    },
+    {
+      "id": "S5",
+      "requirement": "AI prediction",
+      "status": "SYNTHETICALLY_VALIDATED",
+      "evidence": "Four operational AI tasks with grouped holdouts and baselines."
+    },
+    {
+      "id": "S6",
+      "requirement": "Simulation",
+      "status": "VALIDATED",
+      "evidence": "DES, Monte Carlo, machine failures/repairs, scenario analysis, sensitivity."
+    },
+    {
+      "id": "S7",
+      "requirement": "Optimization",
+      "status": "VALIDATED",
+      "evidence": "Nominal, no-regret, box-robust, Pareto and CVaR policy optimization."
+    },
+    {
+      "id": "S8",
+      "requirement": "Decision engine",
+      "status": "VALIDATED",
+      "evidence": "Synchronized-twin recovery and future-state policy recommendation."
+    },
+    {
+      "id": "S9",
+      "requirement": "Explainability",
+      "status": "IMPLEMENTED",
+      "evidence": "Evidence labels, model contributions, solver truthfulness and complete decision contract."
+    },
+    {
+      "id": "S10",
+      "requirement": "Copilot",
+      "status": "WINDOWS_VALIDATED",
+      "evidence": "Gemini bounded scenario interpretation and evidence explanation; optional to core engineering."
+    },
+    {
+      "id": "S11",
+      "requirement": "APIs",
+      "status": "VALIDATED",
+      "evidence": "FastAPI routes covered by automated and runtime smoke tests."
+    },
+    {
+      "id": "S12",
+      "requirement": "Frontend",
+      "status": "WINDOWS_VALIDATED",
+      "evidence": "Machine-lane workbench was Windows/browser validated before V1 polish; V1 adds synchronized-state context, decision/human-review presentation and a code-backed Methodology page. Exact final V1 browser acceptance is the release-lock gate."
+    },
+    {
+      "id": "S13",
+      "requirement": "Testing",
+      "status": "VALIDATED",
+      "evidence": "Unit, integration, mathematical, solver, simulation, release and Windows acceptance gates."
+    },
+    {
+      "id": "S14",
+      "requirement": "Documentation",
+      "status": "IMPLEMENTED",
+      "evidence": "Architecture, Methodology, technical methods, validation, data, limitations, traceability and release story, plus a browser Methodology page tied to packaged evidence."
+    },
+    {
+      "id": "S15",
+      "requirement": "Deployment",
+      "status": "IMPLEMENTED",
+      "evidence": "Windows launcher/readiness wait, tested dependency pins and acceptance batch."
+    },
+    {
+      "id": "IE1",
+      "requirement": "Factory Physics",
+      "status": "VALIDATED",
+      "evidence": "Workload/flow relationships and simulation closure."
+    },
+    {
+      "id": "IE2",
+      "requirement": "Queueing Theory",
+      "status": "VALIDATED",
+      "evidence": "Utilization and Kingman approximation."
+    },
+    {
+      "id": "IE3",
+      "requirement": "Little's Law",
+      "status": "VALIDATED",
+      "evidence": "Reference math and DES closure."
+    },
+    {
+      "id": "IE4",
+      "requirement": "Kingman's Approximation",
+      "status": "VALIDATED",
+      "evidence": "G/G/1 approximation with parameter guards."
+    },
+    {
+      "id": "IE5",
+      "requirement": "Theory of Constraints",
+      "status": "VALIDATED",
+      "evidence": "Static workload constraint and dynamic pressure distinction."
+    },
+    {
+      "id": "IE6",
+      "requirement": "Drum-Buffer-Rope",
+      "status": "VALIDATED",
+      "evidence": "Executable drum sequence/buffer/rope release plan."
+    },
+    {
+      "id": "IE7",
+      "requirement": "CONWIP",
+      "status": "VALIDATED",
+      "evidence": "DES WIP-card admission and deadlock regression."
+    },
+    {
+      "id": "IE8",
+      "requirement": "Lean",
+      "status": "IMPLEMENTED",
+      "evidence": "PCE, flow/WIP visibility and pull-control logic without unsupported savings claims."
+    },
+    {
+      "id": "IE9",
+      "requirement": "JIT",
+      "status": "IMPLEMENTED",
+      "evidence": "Takt/latest-release and pull/release timing methods."
+    },
+    {
+      "id": "IE10",
+      "requirement": "Capacity Planning",
+      "status": "VALIDATED",
+      "evidence": "Per-machine workload/effective availability/load ratio/capacity gap."
+    },
+    {
+      "id": "IE11",
+      "requirement": "Scheduling",
+      "status": "VALIDATED",
+      "evidence": "Finite-capacity precedence/resource scheduling."
+    },
+    {
+      "id": "IE12",
+      "requirement": "Reliability",
+      "status": "VALIDATED",
+      "evidence": "MTBF/MTTR availability and failure/repair DES."
+    },
+    {
+      "id": "IE13",
+      "requirement": "SPC",
+      "status": "VALIDATED",
+      "evidence": "Individuals/Moving-Range limits and signal detection."
+    },
+    {
+      "id": "IE14",
+      "requirement": "DOE",
+      "status": "VALIDATED",
+      "evidence": "Two-level factorial main/interaction effects and sensitivity experiment."
+    },
+    {
+      "id": "OR1",
+      "requirement": "Linear Programming",
+      "status": "JUSTIFIED_NON_SEPARATE",
+      "evidence": "Continuous variables live within scheduling MILPs; a standalone LP cannot represent machine disjunctions and adds no distinct decision."
+    },
+    {
+      "id": "OR2",
+      "requirement": "Mixed-Integer Linear Programming",
+      "status": "VALIDATED",
+      "evidence": "Gurobi primary and separately coded SciPy/HiGHS path with independent feasibility validation."
+    },
+    {
+      "id": "OR3",
+      "requirement": "Network Optimization",
+      "status": "JUSTIFIED_NON_SEPARATE",
+      "evidence": "FT06 routing is fixed; there is no route/network-flow decision. Adding an artificial flow model would be technology bingo."
+    },
+    {
+      "id": "OR4",
+      "requirement": "Robust Optimization",
+      "status": "VALIDATED",
+      "evidence": "Formal box-robust processing-time counterpart with machine-specific uncertainty."
+    },
+    {
+      "id": "OR5",
+      "requirement": "Stochastic Optimization",
+      "status": "VALIDATED",
+      "evidence": "Scenario-based CVaR policy-selection MILP verified by exact enumeration."
+    },
+    {
+      "id": "OR6",
+      "requirement": "Constraint Programming",
+      "status": "JUSTIFIED_NON_SEPARATE",
+      "evidence": "Verified disjunctive MILP already represents the scheduling decision; CP is deferred until it provides measurable scale/performance value."
+    },
+    {
+      "id": "OR7",
+      "requirement": "Simulation Optimization",
+      "status": "VALIDATED",
+      "evidence": "Candidate policies evaluated under common random numbers before stochastic selection."
+    },
+    {
+      "id": "OR8",
+      "requirement": "Multi-objective Optimization",
+      "status": "VALIDATED",
+      "evidence": "Makespan/tardiness/risk scalarizations filtered to a nondominated Pareto set with truthful solver-status handling."
+    },
+    {
+      "id": "AI1",
+      "requirement": "Cycle-time Prediction",
+      "status": "SYNTHETICALLY_VALIDATED",
+      "evidence": "Regression model beats nominal touch-time baseline on grouped synthetic holdout."
+    },
+    {
+      "id": "AI2",
+      "requirement": "Bottleneck Prediction",
+      "status": "SYNTHETICALLY_VALIDATED",
+      "evidence": "Machine classifier compared with static-workload baseline."
+    },
+    {
+      "id": "AI3",
+      "requirement": "Lateness Prediction",
+      "status": "SYNTHETICALLY_VALIDATED",
+      "evidence": "Calibrated logistic classifier with class-prior/challenger evidence."
+    },
+    {
+      "id": "AI4",
+      "requirement": "Anomaly Detection",
+      "status": "SYNTHETICALLY_VALIDATED",
+      "evidence": "Isolation Forest evaluated on injected operational anomalies."
+    },
+    {
+      "id": "AI5",
+      "requirement": "Explainable AI",
+      "status": "IMPLEMENTED",
+      "evidence": "Lateness feature contributions plus non-causal evidence semantics."
+    },
+    {
+      "id": "AI6",
+      "requirement": "Recommendation Engine",
+      "status": "VALIDATED",
+      "evidence": "Predictions materially change robust buffers/objective/review and feed the decision contract."
+    },
+    {
+      "id": "AI7",
+      "requirement": "LLM Copilot where justified",
+      "status": "WINDOWS_VALIDATED",
+      "evidence": "Gemini adds scenario language/explanation while deterministic engineering remains independent."
+    },
+    {
+      "id": "SIM1",
+      "requirement": "Discrete-event simulation",
+      "status": "VALIDATED",
+      "evidence": "Custom release/start/completion/failure/repair/preempt-resume event engine."
+    },
+    {
+      "id": "SIM2",
+      "requirement": "Monte Carlo",
+      "status": "VALIDATED",
+      "evidence": "Seeded repeated future trajectories and confidence/tail metrics."
+    },
+    {
+      "id": "SIM3",
+      "requirement": "Scenario Analysis",
+      "status": "VALIDATED",
+      "evidence": "Plant-wide and machine-specific reliability/variability scenarios."
+    },
+    {
+      "id": "SIM4",
+      "requirement": "Sensitivity Analysis",
+      "status": "VALIDATED",
+      "evidence": "Scenario parameters plus factorial DOE effects."
+    },
+    {
+      "id": "D1",
+      "requirement": "Working digital twin",
+      "status": "VALIDATED",
+      "evidence": "Event-sourced synchronized state plus future-state DES."
+    },
+    {
+      "id": "D2",
+      "requirement": "Validated simulation",
+      "status": "VALIDATED",
+      "evidence": "Deterministic bridge, invariants and stochastic diagnostics."
+    },
+    {
+      "id": "D3",
+      "requirement": "Optimization models",
+      "status": "VALIDATED",
+      "evidence": "MILP/robust/Pareto/stochastic models with independent checks."
+    },
+    {
+      "id": "D4",
+      "requirement": "Explainable AI",
+      "status": "IMPLEMENTED",
+      "evidence": "Quantitative AI evidence and decision-level explanation."
+    },
+    {
+      "id": "D5",
+      "requirement": "Strong IE and OR foundations",
+      "status": "VALIDATED",
+      "evidence": "Executable engineering math and solver formulations."
+    },
+    {
+      "id": "D6",
+      "requirement": "Production-quality software",
+      "status": "IMPLEMENTED",
+      "evidence": "Package/API/persistence/lifecycle/security/release tooling appropriate for a local workstation."
+    },
+    {
+      "id": "D7",
+      "requirement": "Documentation",
+      "status": "IMPLEMENTED",
+      "evidence": "Public engineering story, methods, validation, traceability and limitations."
+    },
+    {
+      "id": "D8",
+      "requirement": "Reproducibility",
+      "status": "VALIDATED",
+      "evidence": "Pinned Windows-tested dependencies, deterministic seeds, packaged artifacts and release gates."
+    },
+    {
+      "id": "D9",
+      "requirement": "Portfolio readiness",
+      "status": "IMPLEMENTED",
+      "evidence": "Distinct signature workflow, quantitative evidence, explainable decision and public-release assets."
+    },
+    {
+      "id": "E1",
+      "requirement": "Real MES/ERP/SCADA/IIoT mapping",
+      "status": "EXTERNAL_VALIDATION_PENDING",
+      "evidence": "Requires a named plant/source contract; V1 provides canonical adapter/replay architecture without fabricated fields."
+    },
+    {
+      "id": "E2",
+      "requirement": "Plant-calibrated processing/failure distributions",
+      "status": "EXTERNAL_VALIDATION_PENDING",
+      "evidence": "Requires real observed data."
+    },
+    {
+      "id": "E3",
+      "requirement": "Real production predictive validation",
+      "status": "EXTERNAL_VALIDATION_PENDING",
+      "evidence": "Synthetic/benchmark metrics are not represented as plant accuracy."
+    },
+    {
+      "id": "E4",
+      "requirement": "Site acceptance / realized benefit",
+      "status": "EXTERNAL_VALIDATION_PENDING",
+      "evidence": "Requires deployment and measured operational outcomes."
+    }
+  ],
+  "unresolved": []
+}

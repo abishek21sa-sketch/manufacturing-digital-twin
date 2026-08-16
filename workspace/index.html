@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>Manufacturing Digital Twin — Operations Workbench</title>
+  <link rel="stylesheet" href="/workspace/assets/styles.css" />
+</head>
+<body class="app-body">
+  <header class="app-header">
+    <div class="brand-block">
+      <div class="eyebrow">MANUFACTURING DIGITAL TWIN · V1.0</div>
+      <h1>Future-State Production &amp; Schedule-Recovery Laboratory</h1>
+      <p class="header-subtitle">Synchronized shop-floor state → predictive risk → finite-capacity recovery → stochastic policy validation → human decision.</p>
+    </div>
+    <div class="header-right">
+      <nav class="top-nav" aria-label="Primary navigation">
+        <a class="nav-link active" href="/workspace">Operations workbench</a>
+        <a class="nav-link" href="/methodology">Methodology</a>
+        <a class="nav-link" href="/docs" target="_blank" rel="noreferrer">API</a>
+      </nav>
+      <div class="status-cluster" aria-label="System status">
+        <span id="apiStatus" class="status-pill waiting">CONNECTING</span>
+        <span id="solverStatus" class="meta-pill">solver —</span>
+        <span id="geminiStatus" class="meta-pill">Gemini —</span>
+        <span id="versionStatus" class="meta-pill">v—</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="workspace-main">
+    <section class="twin-ribbon" aria-label="Current synchronized twin state">
+      <div class="ribbon-intro">
+        <span class="section-kicker">LIVE DECISION CONTEXT</span>
+        <strong>Current synchronized twin</strong>
+        <small id="twinStateId">Loading event-sourced state…</small>
+      </div>
+      <div class="ribbon-stat"><span>Twin clock</span><strong id="twinClock">—</strong><small>event time</small></div>
+      <div class="ribbon-stat"><span>Events</span><strong id="twinEvents">—</strong><small>replayed / ingested</small></div>
+      <div class="ribbon-stat"><span>WIP jobs</span><strong id="twinWip">—</strong><small id="conwipState">CONWIP —</small></div>
+      <div class="ribbon-stat"><span>Current constraint</span><strong id="constraintMachine">—</strong><small id="constraintLoad">workload —</small></div>
+      <div class="ribbon-stat"><span>AI hotspot</span><strong id="predictedBottleneck">—</strong><small id="anomalyState">anomaly gate —</small></div>
+      <div class="ribbon-stat emphasis"><span>Human gate</span><strong id="reviewState">PENDING</strong><small>no autonomous deployment</small></div>
+    </section>
+
+    <section class="scenario-card workbench-card" aria-label="Scenario definition">
+      <div class="section-heading scenario-heading">
+        <div>
+          <span class="section-kicker">01 · SCENARIO BENCH</span>
+          <h2>Define the future you want to test</h2>
+          <p>Change due-date pressure, processing variability and reliability. Every output remains evidence-labeled as observed, predicted, optimized or simulated.</p>
+        </div>
+        <div class="scenario-badge">BENCHMARK / SYNTHETIC FUTURE</div>
+      </div>
+      <div class="scenario-grid">
+        <label>Due factor<input id="dueFactor" type="number" value="1.5" min="0.5" max="4" step="0.1"><small>due-date tightness</small></label>
+        <label>Process CV<input id="processingCv" type="number" value="0.10" min="0" max="0.75" step="0.01"><small>processing variability</small></label>
+        <label>Plant MTBF<input id="mtbf" type="number" value="120" min="1" step="1"><small>mean time between failures</small></label>
+        <label>Plant MTTR<input id="mttr" type="number" value="8" min="0.1" step="0.5"><small>mean time to repair</small></label>
+        <label>Stress machine<select id="stressMachine"><option value="">auto-select</option></select><small>operator override</small></label>
+        <label>Machine MTBF<input id="stressMtbf" type="number" value="35" min="1" step="1"><small>stress override</small></label>
+        <label>Machine MTTR<input id="stressMttr" type="number" value="12" min="0.1" step="0.5"><small>stress override</small></label>
+        <label>Replications<input id="replications" type="number" value="24" min="4" max="200" step="1"><small>common random numbers</small></label>
+        <label>Risk aversion<input id="riskAversion" type="number" value="0.35" min="0" max="3" step="0.05"><small>CVaR weight</small></label>
+        <label>OR backend<select id="backend"><option value="auto">Auto · Gurobi preferred</option><option value="gurobi">Gurobi</option><option value="scipy">HiGHS verification</option></select><small>finite-capacity MILP</small></label>
+      </div>
+      <div class="action-bar">
+        <button id="nominalBtn" class="primary"><span>01</span> Build synchronized recovery</button>
+        <button id="trajectoryBtn"><span>02</span> Run representative future</button>
+        <button id="stressBtn"><span>03</span> Stress-test four policies</button>
+        <a class="text-action" href="/methodology#decision-chain">How the decision is computed →</a>
+      </div>
+    </section>
+
+    <section class="analysis-grid">
+      <article class="timeline-card workbench-card">
+        <div class="section-heading compact-heading">
+          <div>
+            <span class="section-kicker">02 · FUTURE-STATE TIMELINE</span>
+            <h2>Machine-lane production plan</h2>
+          </div>
+          <div id="timelineLabel" class="evidence-label decision">OPTIMIZED DECISION</div>
+        </div>
+        <div class="timeline-toolbar">
+          <div class="legend-group">
+            <span><i class="swatch operation"></i> operation</span>
+            <span><i class="swatch risk"></i> higher lateness risk</span>
+            <span><i class="swatch downtime"></i> simulated downtime</span>
+          </div>
+          <span id="timelineNote" class="timeline-note">Loading nominal recovery…</span>
+        </div>
+        <div class="timeline-shell">
+          <svg id="timeline" role="img" aria-label="Machine-lane production timeline"></svg>
+        </div>
+      </article>
+
+      <aside class="intelligence-rail">
+        <article class="workbench-card intelligence-card">
+          <div class="section-heading compact-heading"><div><span class="section-kicker">03 · PREDICTIVE RISK</span><h2>Lateness risk</h2></div></div>
+          <div class="evidence-label predicted">PREDICTED · SYNTHETICALLY VALIDATED</div>
+          <div id="riskList" class="risk-list"><p class="muted">Loading model scores…</p></div>
+        </article>
+        <article class="workbench-card intelligence-card operational-card">
+          <div class="section-heading compact-heading"><div><span class="section-kicker">OPERATIONAL AI</span><h2>Future constraint &amp; anomaly gate</h2></div></div>
+          <div class="operational-ai-grid">
+            <div><span>Predicted bottleneck</span><strong id="aiBottleneck">—</strong><small id="aiBottleneckProbability">—</small></div>
+            <div><span>Anomalous machines</span><strong id="aiAnomalies">—</strong><small>forces human review</small></div>
+            <div><span>Cycle-time model</span><strong id="cycleTimeState">READY</strong><small>remaining-flow estimate</small></div>
+          </div>
+        </article>
+      </aside>
+    </section>
+
+    <section class="decision-card workbench-card">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">04 · ROBUST POLICY VERDICT</span>
+          <h2>Which policy survives the modeled future?</h2>
+          <p>Common-random-number Monte Carlo feeds a scenario-based CVaR policy MILP. The nominal mathematical optimum is allowed to lose if its tail risk is worse.</p>
+        </div>
+        <div class="evidence-label simulated">SIMULATION + STOCHASTIC OPTIMIZATION</div>
+      </div>
+      <div id="policyRows" class="policy-rows"><p class="muted">Run the stress test to compare SPT, EDD, nominal AI-risk and box-robust AI policies.</p></div>
+      <div id="recommendation" class="recommendation empty">
+        <div><span class="recommendation-label">RECOMMENDATION</span><strong>No robust recommendation yet.</strong></div>
+      </div>
+      <div id="decisionPacket" class="decision-packet hidden">
+        <div class="packet-main">
+          <span class="section-kicker">DECISION EVIDENCE PACKET</span>
+          <h3 id="decisionAction">—</h3>
+          <p id="decisionRationale">—</p>
+          <div class="packet-grid">
+            <div><span>Modeled impact</span><strong id="decisionImpact">—</strong></div>
+            <div><span>Uncertainty</span><strong id="decisionUncertainty">—</strong></div>
+            <div><span>Solver evidence</span><strong id="decisionSolver">—</strong></div>
+            <div><span>Evidence level</span><strong id="decisionEvidence">—</strong></div>
+          </div>
+          <details class="evidence-details"><summary>Assumptions &amp; trade-offs</summary><div id="decisionDetails"></div></details>
+        </div>
+        <aside class="human-review-panel">
+          <span class="section-kicker">HUMAN DECISION GATE</span>
+          <strong id="decisionDisposition">PENDING</strong>
+          <p>Optimization and simulation produce recommendations only. Execution requires explicit human disposition.</p>
+          <textarea id="decisionNote" rows="3" placeholder="Optional engineering review note"></textarea>
+          <div class="review-actions">
+            <button data-disposition="approved" class="approve-btn">Approve</button>
+            <button data-disposition="deferred">Defer</button>
+            <button data-disposition="rejected" class="reject-btn">Reject</button>
+          </div>
+          <small id="decisionRunId">Run —</small>
+        </aside>
+      </div>
+    </section>
+
+    <section class="lower-grid">
+      <article class="workbench-card data-bay">
+        <div class="section-heading compact-heading"><div><span class="section-kicker">05 · DATA READINESS</span><h2>Historical replay gate</h2></div></div>
+        <p>Validate canonical manufacturing events before they enter analysis. Uploaded data is replayed in an isolated twin and is never silently committed.</p>
+        <div id="dataSchema" class="schema-line"></div>
+        <label class="file-control"><span>Choose canonical event CSV</span><input id="eventFile" type="file" accept=".csv,text/csv"></label>
+        <div class="button-row"><button id="validateDataBtn">Validate schema + semantics</button><button id="replayDataBtn">Replay isolated twin</button></div>
+        <pre id="dataResult" class="result-box">No file selected.</pre>
+      </article>
+
+      <article class="workbench-card copilot-bay">
+        <div class="section-heading compact-heading">
+          <div><span class="section-kicker">06 · ENGINEERING INTERROGATION</span><h2>Gemini above deterministic tools</h2></div>
+          <a href="/methodology#copilot" class="mini-link">grounding contract →</a>
+        </div>
+        <p>Gemini interprets bounded scenario language and explains already-computed evidence. It never supplies solver values or engineering arithmetic.</p>
+        <label>Scenario request<textarea id="scenarioPrompt" rows="3" placeholder="Stress M5 with MTBF 30 and MTTR 14, use 30 replications, and favor tail-risk robustness."></textarea></label>
+        <button id="copilotScenarioBtn">Interpret → run deterministic tools</button>
+        <label>Evidence question<textarea id="explainPrompt" rows="2" placeholder="Why did the robust policy beat the nominal AI-risk schedule?"></textarea></label>
+        <button id="copilotExplainBtn">Explain current engineering evidence</button>
+        <div id="copilotResult" class="copilot-result">Gemini status loading…</div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div><strong>DECISION CHAIN</strong><span>EVENTS → TWIN STATE → AI → IE → GUROBI → DES → CVaR POLICY → HUMAN APPROVAL</span></div>
+    <div class="footer-links"><a href="/methodology">Methodology</a><a href="/docs">API</a><span>Benchmark/synthetic evidence unless explicitly labeled otherwise.</span></div>
+  </footer>
+  <script type="module" src="/workspace/assets/app.js"></script>
+</body>
+</html>

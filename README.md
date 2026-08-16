@@ -1,0 +1,211 @@
+# Manufacturing Digital Twin Decision Intelligence Platform
+
+**Release:** V1.0 (`1.0.0`)  
+**Primary local target:** Windows 11 / Python 3.14  
+**Primary OR solver:** Gurobi; independent SciPy/HiGHS verification path  
+**Optional LLM layer:** Google Gemini via local `GEMINI_API_KEY`  
+**Evidence boundary:** public benchmark + synthetic AI validation + simulated future-state validation; real plant/site validation remains external.
+
+## What this is
+
+A computational manufacturing decision system that reconstructs shop-floor state from manufacturing events, predicts emerging operational risk, generates finite-capacity recovery schedules, stress-tests those schedules under stochastic processing and machine failure, and presents an evidence-labeled recommendation for explicit human review.
+
+It is intentionally **not** a KPI dashboard called a digital twin. The production workflow is:
+
+```text
+MANUFACTURING EVENTS / PUBLIC BENCHMARK
+                ↓
+        SYNCHRONIZED EVENT-SOURCED TWIN
+                ↓
+  RESIDUAL STATE / CURRENT CLOCK / RESOURCE AVAILABILITY
+                ↓
+ LATENESS + CYCLE-TIME + BOTTLENECK + ANOMALY AI
+                ↓
+ IE FLOW / CAPACITY / RELIABILITY / RELEASE CONTROL
+                ↓
+  GUROBI FINITE-CAPACITY + BOX-ROBUST RECOVERY MILPs
+                ↓
+     STOCHASTIC DISCRETE-EVENT DIGITAL TWIN
+                ↓
+ MONTE CARLO + CVaR STOCHASTIC POLICY SELECTION
+                ↓
+   EXPLAINABLE RECOMMENDATION + HUMAN DISPOSITION
+```
+
+The signature interface is the **Future-State Production & Schedule-Recovery Laboratory** at `http://127.0.0.1:8000/workspace`. A companion **Engineering Methodology** page at `http://127.0.0.1:8000/methodology` explains the implemented IE, AI, OR and simulation mathematics and their validation boundaries.
+
+## Digital-Twin-first architecture
+
+`TwinSnapshot` is converted to a residual planning state before AI/OR/simulation operate:
+
+- completed operations are removed;
+- running work is frozen/projected from observed starts;
+- current twin time becomes the scheduling origin;
+- machine availability is carried forward;
+- a machine currently DOWN requires an explicit recovery assumption;
+- every analytical run retains a deterministic twin-state identifier and event count.
+
+This prevents optimization from silently solving a pristine factory when the synchronized twin has already changed.
+
+## AI — four operational tasks
+
+1. **Lateness-risk classification** — calibrated standardized logistic regression; risk enters the tardiness objective.
+2. **Remaining/cycle-time regression** — predicts flow consequence beyond nominal touch time.
+3. **Future bottleneck prediction** — predicts the likely dynamic pressure constraint and informs robust buffers/stress targeting.
+4. **Operational anomaly detection** — Isolation Forest flags machine-state patterns for human review; anomaly score is not presented as a probability.
+
+Models are quantitatively evaluated on grouped synthetic holdouts against explicit baselines. Exact metrics and model-selection evidence are in `docs/evidence/` and `docs/TECHNICAL_METHODS.md`. These metrics are **synthetic validation**, not claimed plant accuracy.
+
+Gemini is optional and sits above the deterministic stack. It parses bounded scenario language and explains already-computed evidence; it does not fabricate schedules, factory mathematics, solver results or simulation outputs.
+
+## Industrial Engineering
+
+Executable IE methods include:
+
+- Factory Physics, throughput/WIP/flow relationships and Little's Law;
+- queue utilization and Kingman's G/G/1 approximation;
+- static and dynamic bottleneck analysis;
+- Theory of Constraints and Drum-Buffer-Rope release planning;
+- CONWIP admission enforced inside the DES;
+- takt, capacity, JIT latest release, Process Cycle Efficiency and OEE relationships;
+- MTBF/MTTR availability and reliability;
+- SPC Individuals/Moving-Range logic;
+- two-level factorial DOE/sensitivity effects.
+
+The APIs explicitly refuse to fabricate OEE/takt/SPC outputs when the required live signals are absent.
+
+## Operations Research
+
+The principal decision model is a disjunctive finite-capacity job-shop MILP with:
+
+- continuous operation start times;
+- binary same-machine ordering variables;
+- job tardiness variables;
+- makespan;
+- release/current-twin readiness constraints;
+- operation precedence;
+- resource non-overlap;
+- current machine-availability boundaries;
+- AI risk-weighted tardiness;
+- an aggregate-tardiness no-regret guard relative to the status-quo SPT plan.
+
+Additional decision methods:
+
+- formal box-robust processing-time counterpart;
+- multiobjective/Pareto schedule analysis;
+- common-random-number simulation optimization;
+- scenario-based CVaR stochastic policy-selection MILP;
+- exact enumeration oracle for stochastic policy selection.
+
+Gurobi is the primary Windows solver. A separately coded SciPy/HiGHS path and solver-independent schedule validator provide independent evidence. Solver termination is separated from physical feasibility: a complete independently valid time-limit incumbent can be usable without being mislabeled optimal.
+
+## Stochastic digital twin
+
+The custom event-driven simulation models:
+
+- job release;
+- operation readiness/start/completion;
+- stochastic processing time;
+- machine failure and repair;
+- preempt/resume interruption;
+- machine downtime;
+- SPT, EDD, FIFO and planned sequences;
+- CONWIP admission;
+- seeded reproducibility;
+- Monte Carlo future trajectories;
+- P95/CVaR tail risk;
+- Little's-Law and event-conservation invariants.
+
+The simulator can reject a nominal optimization policy when its stochastic tail risk is worse. Simulation evidence is clearly labeled **simulated future-state evidence**.
+
+## Decision evidence and audit
+
+Each recommendation exposes:
+
+- action;
+- rationale;
+- baseline and modeled impact;
+- assumptions;
+- uncertainty;
+- trade-offs;
+- solver status/gap and independently assessed solution quality;
+- Pareto alternatives;
+- evidence level;
+- twin-state/run identifiers;
+- explicit human review state.
+
+Decision runs are persisted and can be marked `APPROVED`, `REJECTED` or `DEFERRED` with an audit note. No optimizer recommendation automatically becomes a plant action.
+
+## Data
+
+V1.0 ships with the public **OR-Library FT06** job-shop benchmark and a canonical manufacturing-event CSV adapter/replay gate. Uploaded CSV data is validated and replayed in an **isolated twin**; it is never silently committed to the live event ledger.
+
+Live MES/ERP/SCADA/IIoT mapping, plant-calibrated distributions and site acceptance are intentionally listed as **external validation pending**, not simulated with invented fields.
+
+## Run on Windows
+
+From a clean extraction:
+
+```powershell
+Copy-Item .env.example .env
+# Add GEMINI_API_KEY only if you want the optional Gemini layer.
+.\run_windows.bat
+```
+
+The launcher installs the pinned Windows-tested dependencies, verifies static/frontend integrity, starts Uvicorn, waits for `/health` and `/workspace`, then opens the browser only after the server is ready.
+
+For the final acceptance gate:
+
+```powershell
+.\accept_v1_windows.bat
+```
+
+The acceptance path exercises release/public gates, Gurobi, independent OR evidence, synchronized-twin recovery, robust/Pareto/stochastic logic, Gemini when configured, and the real workspace startup lifecycle.
+
+## Validation and evidence
+
+Core benchmark/reference evidence includes:
+
+- FT06: 6 jobs, 6 machines, 36 operations, total work 197;
+- exact makespan benchmark: 55 under makespan-only scheduling;
+- independent Gurobi/HiGHS agreement on the exact benchmark;
+- solver-independent schedule-feasibility validation;
+- AI model/baseline metrics in `docs/evidence/`;
+- deterministic DES bridge to known schedules;
+- stochastic failure/repair invariant tests;
+- common-random-number Monte Carlo and CVaR policy comparison;
+- synchronized non-zero-twin closure diagnostics;
+- Constitution traceability and final 25-question quality gate.
+
+See `docs/METHODOLOGY.md`, `docs/TECHNICAL_METHODS.md`, `docs/VALIDATION.md`, `docs/VALIDATION_EVIDENCE.json`, `docs/CONSTITUTION_TRACEABILITY.md` and `docs/QUALITY_GATE.md`.
+
+## Repository map
+
+```text
+src/mdt/                production Python package
+  ai/                   model training/inference/explanations
+  api/                  FastAPI application
+  data/                 benchmark and external-event adapters
+  ie/                   Industrial Engineering methods
+  optimization/         nominal/robust/Pareto/stochastic OR
+  simulation/           discrete-event future-state twin
+  twin/                 event-sourced state reconstruction
+workspace/              zero-build workbench + engineering methodology page
+artifacts/ai/            packaged validated model artifacts
+data/                    benchmark/sample inputs
+docs/                    architecture, methods, evidence, traceability
+scripts/                 diagnostics/release/Windows acceptance
+```
+
+## Important limitations
+
+- AI accuracy is validated on synthetic benchmark-derived scenarios, not a named factory.
+- Reliability/processing distributions are scenario assumptions until plant-calibrated.
+- Historical CSV replay is an adapter/readiness boundary, not a live MES connector.
+- OEE/SPC/takt cannot be called live plant measures without the required signals.
+- Simulated/optimized improvements are **modeled consequences**, not realized savings.
+- The product is a portfolio/research-grade workstation and still requires site-specific security, data contracts, governance and operational integration before production plant deployment.
+
+## Release status
+
+**V1.0 is feature-frozen.** Further extensions belong in `docs/FUTURE_WORK.md`. The final public release is accepted only after the exact distributed ZIP passes clean-extraction testing and the target Windows acceptance/browser checks.

@@ -1,0 +1,21 @@
+name: Windows V1 Release Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  deterministic-release-gate:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - name: Install Windows-tested dependencies
+        run: |
+          python -m pip install -r requirements-windows-tested.txt
+          python -m pip install -e . --no-deps
+      - name: Deterministic release gate
+        run: python scripts/release_check.py

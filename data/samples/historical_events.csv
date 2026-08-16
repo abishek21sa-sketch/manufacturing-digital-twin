@@ -1,0 +1,4 @@
+event_id,event_type,timestamp,job_id,operation_id,machine_id,payload_json
+sample-001,job_released,0,J0,,,{}
+sample-002,operation_started,0,J0,J0-O0,M2,{}
+sample-003,operation_completed,1,J0,J0-O0,M2,{}

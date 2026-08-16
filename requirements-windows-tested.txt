@@ -1,0 +1,15 @@
+# Direct dependencies validated during the Windows V1 finalization line.
+# Transitive dependencies remain resolved by pip.
+fastapi==0.141.1
+uvicorn[standard]==0.52.3
+pydantic==2.13.4
+sqlalchemy==2.0.52
+numpy==2.4.6
+scipy==1.18.0
+scikit-learn==1.8.0
+joblib==1.5.3
+python-dotenv==1.2.2
+pytest==9.1.1
+httpx==0.28.1
+gurobipy==13.0.2
+google-genai==2.18.1
