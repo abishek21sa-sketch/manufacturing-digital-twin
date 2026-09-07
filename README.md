@@ -1,3 +1,5 @@
+> **RC4 Windows acceptance:** from the outer extracted RC4 folder, run `.\RUN_ACCEPTANCE.cmd`. Do not run the PowerShell acceptance scripts directly. The RC4 launcher creates/verifies a Python 3.14 project venv, installs the acceptance dependencies, and runs the correct repository gate without depending on PowerShell execution policy.
+
 # Manufacturing Digital Twin Decision Intelligence Platform
 
 **Release:** V1.0 (`1.0.0`)  
@@ -32,7 +34,9 @@ MANUFACTURING EVENTS / PUBLIC BENCHMARK
    EXPLAINABLE RECOMMENDATION + HUMAN DISPOSITION
 ```
 
-The signature interface is the **Future-State Production & Schedule-Recovery Laboratory** at `http://127.0.0.1:8000/workspace`. A companion **Engineering Methodology** page at `http://127.0.0.1:8000/methodology` explains the implemented IE, AI, OR and simulation mathematics and their validation boundaries.
+The signature interface is the **Future-State Production & Schedule-Recovery Laboratory** at `http://127.0.0.1:8010/workspace`. A companion **Engineering Methodology** page at `http://127.0.0.1:8010/methodology` explains the implemented IE, AI, OR and simulation mathematics and their validation boundaries. Set `MDT_PORT` or pass `scripts/launch_workspace.py --port`; use `0` for an OS-assigned ephemeral port during parallel acceptance runs.
+
+For a career-fair or research demonstration, open the workspace in `mode=demo`, choose one of the four **Quick Scenarios**, then run the three visible stages: build synchronized recovery, simulate a representative future, and stress-test four policies. The workspace reveals each result as it completes and automatically brings the relevant timeline or decision surface into view. The `Baseline`, `Reliability shock`, `Due-date pressure` and `Process variability` presets are deterministic scenario assumptions, not plant observations.
 
 ## Digital-Twin-first architecture
 
@@ -136,9 +140,18 @@ Each recommendation exposes:
 
 Decision runs are persisted and can be marked `APPROVED`, `REJECTED` or `DEFERRED` with an audit note. No optimizer recommendation automatically becomes a plant action.
 
+The product runtime also exposes the event reconstruction chain at `/v1/twin/ledger`: each row records the event sequence, source/provenance, before/after twin identity and the state objects changed by replay. The workbench presents this alongside finite-capacity slack, machine state, schedule difference evidence, and decision history.
+
 ## Data
 
 V1.0 ships with the public **OR-Library FT06** job-shop benchmark and a canonical manufacturing-event CSV adapter/replay gate. Uploaded CSV data is validated and replayed in an **isolated twin**; it is never silently committed to the live event ledger.
+
+The workbench also integrates the reproducible 150,000-row, 80-column
+`data/synthetic/mdt_operational_scenarios_150000.csv` dataset. The UI shows its
+integrity summary and provides a download link through `/v1/data/synthetic` and
+`/v1/data/synthetic/download`. This dataset is synthetic scenario analytics,
+not a canonical event history and not live plant telemetry; its manifest and
+SHA-256 digest are checked before the summary is shown.
 
 Live MES/ERP/SCADA/IIoT mapping, plant-calibrated distributions and site acceptance are intentionally listed as **external validation pending**, not simulated with invented fields.
 
@@ -153,6 +166,8 @@ Copy-Item .env.example .env
 ```
 
 The launcher installs the pinned Windows-tested dependencies, verifies static/frontend integrity, starts Uvicorn, waits for `/health` and `/workspace`, then opens the browser only after the server is ready.
+
+`run_windows.bat` uses the preferred port from `MDT_PORT` (8010 by default). `run_demo_windows.bat` follows the same rule. For concurrent workspaces or CI, set `MDT_PORT=0` or invoke `python scripts/launch_workspace.py --port 0 --no-browser`.
 
 For the final acceptance gate:
 
@@ -208,4 +223,47 @@ scripts/                 diagnostics/release/Windows acceptance
 
 ## Release status
 
-**V1.0 is feature-frozen.** Further extensions belong in `docs/FUTURE_WORK.md`. The final public release is accepted only after the exact distributed ZIP passes clean-extraction testing and the target Windows acceptance/browser checks.
+**V1.0 engineering baseline is preserved.** The product runtime release candidate adds governed operating-console surfaces and port/lifecycle hardening. The final distributed ZIP is accepted only after clean-extraction testing and the target Windows acceptance/browser checks.
+
+
+## Signature algorithm
+See [`docs/SIGNATURE_ALGORITHM.md`](docs/SIGNATURE_ALGORITHM.md) for the governed TRUST-RH formulation.
+
+
+## Product runtime layer
+
+The portfolio distribution adds three outer-folder commands in addition to the engineering acceptance gate:
+
+```powershell
+.\RUN_APP.cmd
+.\RUN_DEMO.cmd
+.\RUN_PRODUCT_ACCEPTANCE.cmd
+```
+
+`RUN_DEMO.cmd` resets a dedicated `runtime/mdt_demo.db`, loads a deterministic non-zero FT06 manufacturing history, executes a compact stress-test decision workflow, writes `artifacts/demo/latest_demo_evidence.json`, and launches the same production workspace in demo mode. The normal `runtime/mdt.db` is not overwritten. The workbench can also download the current decision evidence packet as JSON.
+
+See `docs/OPERATIONS_RUNBOOK.md` for the operator workflow, trust-state handling, release gates, evidence boundaries and incident response expectations.
+
+## Production-readiness foundation
+
+RC4 hardens the platform boundary needed before a named plant deployment: production-aware settings, API-key role controls, request IDs, liveness/readiness/metrics endpoints, a versioned idempotent event-ingestion contract with request-fingerprint protection, reviewed Alembic migrations, PostgreSQL/Docker deployment artifacts, production preflight checks and a security policy. See `docs/PRODUCTION_READINESS.md`, `docs/EVENT_CONTRACT_V1.md`, `docs/DATABASE_OPERATIONS.md` and `SECURITY.md`.
+
+These controls do not claim that a plant connector, plant calibration, enterprise identity integration or site acceptance has occurred. Those remain explicit external release gates.
+
+## Pre-publication Fortune-50 readiness boundary
+
+Before a public GitHub commit, run the offline claim/provenance gate:
+
+```powershell
+$env:PYTHONPATH="src"
+$env:PYTHONNOUSERSITE="1"
+$env:PYTEST_DISABLE_PLUGIN_AUTOLOAD="1"
+.\.venv\Scripts\python.exe scripts\fortune50_preflight.py
+```
+
+The assessment in `docs/FORTUNE50_READINESS.md` and the model cards in
+`docs/MODEL_CARDS.md` are part of the release contract. They make the project
+stronger for research and career-fair review without claiming that synthetic
+validation is plant accuracy or that a demo is approved for MES/SCADA/PLC
+execution. Public source provenance and licensing boundaries are maintained in
+`docs/PUBLIC_DATA_CATALOG.md`.

@@ -1,0 +1,6 @@
+stability_penalty,objective,churn_count,status
+0,2.3,2,OPTIMAL
+0.5,2.3,0,OPTIMAL
+1,2.3,0,OPTIMAL
+2,2.3,0,OPTIMAL
+5,2.3,0,OPTIMAL

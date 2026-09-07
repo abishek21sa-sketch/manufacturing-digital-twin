@@ -7,13 +7,13 @@ name = "manufacturing-digital-twin"
 version = "1.0.0"
 description = "Manufacturing digital twin decision intelligence platform with predictive risk, Gurobi scheduling, stochastic simulation, and future-state recovery"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.14,<3.15"
 dependencies = [
   "fastapi>=0.115,<1",
   "uvicorn[standard]>=0.30,<1",
   "pydantic>=2.8,<3",
   "sqlalchemy>=2.0,<3",
-  "numpy>=2.2,<2.5",
+  "numpy>=2.3.5,<2.4",
   "scipy>=1.15,<2",
   "scikit-learn>=1.8,<1.9",
   "joblib>=1.4,<2",
@@ -21,9 +21,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8,<10", "httpx>=0.27,<1"]
+dev = ["pytest>=8,<10", "coverage>=7.16,<8", "httpx>=0.27,<1"]
 gurobi = ["gurobipy>=13.0,<14"]
 gemini = ["google-genai>=2.18,<3"]
+production = ["psycopg[binary]>=3.2,<4", "alembic>=1.14,<2"]
 
 [project.scripts]
 mdt = "mdt.cli:main"

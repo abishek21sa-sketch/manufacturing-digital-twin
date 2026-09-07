@@ -31,6 +31,42 @@ from mdt.planning import TwinPlanningState, planning_state_from_twin
 from mdt.simulation import PolicySpec, ReliabilitySpec, SimulationConfig, stress_test_policies
 
 
+def _schedule_stability_metrics(prior_operations: list[dict], candidate_operations: list[dict], *, frozen_operations: list[dict] | None = None) -> dict:
+    """Compare a candidate plan to the prior plan in operational terms."""
+    prior = {row["operation_id"]: row for row in prior_operations}
+    candidate = {row["operation_id"]: row for row in candidate_operations}
+    changed = []
+    start_displacement = 0.0
+    for operation_id, row in candidate.items():
+        old = prior.get(operation_id)
+        if old is None:
+            continue
+        delta = abs(float(row["start"]) - float(old["start"]))
+        start_displacement += delta
+        if delta > 1e-6 or row.get("machine_id") != old.get("machine_id"):
+            changed.append({
+                "operation_id": operation_id,
+                "job_id": row.get("job_id"),
+                "prior_machine_id": old.get("machine_id"),
+                "candidate_machine_id": row.get("machine_id"),
+                "prior_start": old.get("start"),
+                "candidate_start": row.get("start"),
+                "start_delta": delta,
+            })
+    frozen_ids = {row["operation_id"] for row in (frozen_operations or [])}
+    frozen_violations = [row["operation_id"] for row in changed if row["operation_id"] in frozen_ids]
+    return {
+        "prior_schedule": "SPT_STATUS_QUO",
+        "compared_operations": len(changed),
+        "changed_operations": len(changed),
+        "start_time_changes": sum(1 for row in changed if row["start_delta"] > 1e-6),
+        "machine_reassignments": sum(1 for row in changed if row["prior_machine_id"] != row["candidate_machine_id"]),
+        "total_start_time_displacement": start_displacement,
+        "frozen_zone_violations": frozen_violations,
+        "change_log": changed[:50],
+    }
+
+
 def _baseline_payload(problem: ScheduleProblem) -> dict:
     baseline = heuristic_dispatch(problem, "SPT")
     tardiness = {
@@ -57,6 +93,7 @@ def _baseline_payload(problem: ScheduleProblem) -> dict:
             "risk_weighted_tardiness": risk_weighted_tardiness,
         },
         "objective_value": objective_value,
+        "operations": [asdict(op) for op in baseline.operations],
     }
 
 
@@ -143,6 +180,7 @@ def build_twin_recovery_decision(
     mtbf: float | None = 120.0,
     mttr: float = 8.0,
     down_machine_recovery: dict[str, float] | None = None,
+    stability_penalty: float = 0.0,
 ) -> dict:
     """Build the operational recovery decision from the synchronized twin state."""
 
@@ -185,13 +223,17 @@ def build_twin_recovery_decision(
     explanations = explain_lateness_scores(risk_model, state.residual_factory, scored, top_k=3)
 
     baseline = _baseline_payload(problem)
-    nominal_problem = _with_no_regret_tardiness_guard(problem, baseline)
+    if stability_penalty < 0:
+        raise ValueError("stability_penalty must be non-negative")
+    prior_start = {row["operation_id"]: float(row["start"]) for row in baseline["operations"]}
+    stability_problem = replace(problem, prior_start=prior_start, stability_penalty=stability_penalty)
+    nominal_problem = _with_no_regret_tardiness_guard(stability_problem, baseline)
     optimized = solve_schedule(nominal_problem, backend=backend, time_limit=time_limit, mip_gap=0.0)
     nominal_assessment = assess_schedule(nominal_problem, optimized)
     nominal_violations = nominal_assessment.violations
 
     robustness = _robustness_from_bottleneck(bottleneck_scores, processing_cv)
-    robust = solve_box_robust_schedule(problem, robustness, backend=backend, time_limit=time_limit, mip_gap=0.0)
+    robust = solve_box_robust_schedule(stability_problem, robustness, backend=backend, time_limit=time_limit, mip_gap=0.0)
     robust_schedule = robust.schedule
     robust_assessment = assess_schedule(robust.robust_problem, robust_schedule)
     robust_violations = robust_assessment.violations
@@ -203,7 +245,7 @@ def build_twin_recovery_decision(
     # caller's full solve budget rather than returning an empty frontier.
     pareto_fast_limit = min(time_limit, 5.0)
     pareto = pareto_schedule_frontier(
-        problem,
+        stability_problem,
         backend=backend,
         weight_grid=((1.0, 0.0), (0.05, 1.0), (0.0, 1.0)),
         risk_tardiness_weight=1.0,
@@ -283,6 +325,12 @@ def build_twin_recovery_decision(
             "violations": [asdict(v) for v in robust_violations],
             "operations": [asdict(op) for op in robust_schedule.operations],
         },
+        "stability": {
+            "penalty_weight": stability_penalty,
+            "nominal": _schedule_stability_metrics(baseline["operations"], [asdict(op) for op in optimized.operations], frozen_operations=[asdict(op) for op in state.frozen_operations]),
+            "robust": _schedule_stability_metrics(baseline["operations"], [asdict(op) for op in robust_schedule.operations], frozen_operations=[asdict(op) for op in state.frozen_operations]),
+            "evidence_label": "CALCULATED SCHEDULE CHANGE EVIDENCE — PRIOR SPT STATUS QUO",
+        },
         "pareto_frontier": [asdict(point) for point in pareto],
         "decision": {
             "action": (
@@ -307,6 +355,7 @@ def build_twin_recovery_decision(
                 "box robustness is conservative and does not substitute for stochastic simulation",
             ],
             "trade_offs": [
+                "the explicit stability penalty prices displacement from the prior schedule; set it to zero for the ablation",
                 "the robust schedule may sacrifice nominal makespan/tardiness to protect bounded processing-time uncertainty",
                 "a Pareto frontier is provided because throughput horizon and customer tardiness are competing objectives",
                 "machine anomaly flags require human review rather than automatic execution",
@@ -345,6 +394,7 @@ def build_twin_future_state_stress_test(
     stressed_machine_mttr: float | None = None,
     down_machine_recovery: dict[str, float] | None = None,
     wip_cap: int | None = None,
+    stability_penalty: float = 0.0,
 ) -> dict:
     decision = build_twin_recovery_decision(
         factory,
@@ -360,6 +410,7 @@ def build_twin_future_state_stress_test(
         mtbf=mtbf,
         mttr=mttr,
         down_machine_recovery=down_machine_recovery,
+        stability_penalty=stability_penalty,
     )
     state, problem, _ = _build_twin_problem(factory, snapshot, risk_model, due_factor=due_factor, down_machine_recovery=down_machine_recovery)
     if not state.residual_factory.jobs:

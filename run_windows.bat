@@ -1,16 +1,29 @@
 @echo off
-setlocal
+setlocal EnableExtensions
 cd /d "%~dp0"
+if "%MDT_PORT%"=="" set "MDT_PORT=8010"
 
-echo [MDT] Manufacturing Digital Twin V1.0
-if not exist ".venv\Scripts\python.exe" (
-  echo [MDT] Creating Windows virtual environment...
-  py -3.14 -m venv .venv 2>nul || python -m venv .venv || exit /b 1
+echo [MDT] Manufacturing Digital Twin V1.0 - Python 3.14 stable runtime
+where py >nul 2>nul || exit /b 2
+py -3.14 -c "import sys; assert sys.version_info[:2]==(3,14); print(sys.version)" || exit /b 3
+
+if exist ".venv\Scripts\python.exe" (
+  ".venv\Scripts\python.exe" -c "import sys; raise SystemExit(0 if sys.version_info[:2]==(3,14) else 1)" >nul 2>nul
+  if errorlevel 1 rmdir /s /q .venv
 )
-call .venv\Scripts\activate.bat || exit /b 1
-python -m pip install -r requirements-windows-tested.txt || exit /b 1
-python -m pip install -e . --no-deps || exit /b 1
-python scripts\static_gate.py || exit /b 1
-python scripts\frontend_check.py || exit /b 1
-python scripts\launch_workspace.py
+if not exist ".venv\Scripts\python.exe" py -3.14 -m venv .venv || exit /b 1
+set "PY=%CD%\.venv\Scripts\python.exe"
+set "PYTHONNOUSERSITE=1"
+set "PYTHONPATH="
+set "OMP_NUM_THREADS=1"
+set "OPENBLAS_NUM_THREADS=1"
+set "MKL_NUM_THREADS=1"
+
+"%PY%" -m pip install --upgrade pip setuptools wheel || exit /b 1
+"%PY%" -m pip install -r requirements-windows-tested.txt || exit /b 1
+"%PY%" -m pip install -e . --no-deps --no-build-isolation || exit /b 1
+"%PY%" -I scripts\windows_native_runtime_smoke.py || exit /b 1
+"%PY%" scripts\static_gate.py || exit /b 1
+"%PY%" scripts\frontend_check.py || exit /b 1
+"%PY%" scripts\launch_workspace.py
 exit /b %errorlevel%

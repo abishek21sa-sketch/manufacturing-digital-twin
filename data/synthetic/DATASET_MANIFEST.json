@@ -1,0 +1,83 @@
+{
+  "dataset_name": "MDT Operational Scenario Dataset",
+  "file": "mdt_operational_scenarios_150000.csv",
+  "rows": 150000,
+  "columns": 80,
+  "schema_version": "mdt-synthetic-scenario-v2",
+  "generator": "scripts/generate_synthetic_dataset.py",
+  "seed": 20260906,
+  "sha256": "eb64bf5fd21366ccca919b837d3aebec9018a5a2c2dc1f6b277dc7ebd32a8fa9",
+  "evidence_boundary": "Synthetic, deterministic portfolio data for demonstrations, testing, and research workflows. It is not plant telemetry, a public benchmark, or a realized operational claim.",
+  "coverage": {
+    "scenario_classes": [
+      "nominal_flow",
+      "high_wip",
+      "tight_due_dates",
+      "process_variability",
+      "machine_failure",
+      "machine_recovery",
+      "quality_excursion",
+      "material_delay",
+      "capacity_bottleneck",
+      "policy_tradeoff"
+    ],
+    "event_types": [
+      "job_released",
+      "operation_started",
+      "operation_completed",
+      "machine_down",
+      "machine_up"
+    ],
+    "machine_states": [
+      "idle",
+      "busy",
+      "down"
+    ],
+    "failure_modes": [
+      "none",
+      "bearing",
+      "sensor",
+      "tool_wear",
+      "thermal",
+      "material",
+      "software"
+    ],
+    "policy_outcomes": [
+      "on_time",
+      "late",
+      "recovered",
+      "blocked"
+    ],
+    "quality_labels": [
+      "pass",
+      "rework",
+      "scrap"
+    ]
+  },
+  "public_references": [
+    {
+      "name": "UCI AI4I 2020 Predictive Maintenance Dataset",
+      "url": "https://archive.ics.uci.edu/dataset/601/ai4i",
+      "use": "Publicly available 10,000-row predictive-maintenance reference; itself synthetic and not event-sourced scheduling data.",
+      "license": "CC BY 4.0"
+    },
+    {
+      "name": "UCI SECOM",
+      "url": "https://archive.ics.uci.edu/dataset/179/secom",
+      "use": "Public semiconductor manufacturing sensor/yield reference with 1,567 examples and 591 features.",
+      "license": "CC BY 4.0"
+    },
+    {
+      "name": "NASA Prognostics Center of Excellence data repository",
+      "url": "https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/",
+      "use": "Public prognostics and run-to-failure references; useful for reliability-method comparisons, not a factory event ledger.",
+      "license": "Check source-specific terms before redistribution"
+    },
+    {
+      "name": "OR-Library job-shop scheduling benchmarks",
+      "url": "https://people.brunel.ac.uk/~mastjjb/jeb/orlib/jobshopinfo.html",
+      "use": "Public job-shop optimization instances, including the repository's FT06 baseline.",
+      "license": "Check OR-Library legal notice before redistribution"
+    }
+  ]
+}

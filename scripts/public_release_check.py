@@ -14,6 +14,8 @@ REQUIRED = (
     "docs/CONSTITUTION_TRACEABILITY.json", "docs/DATA.md", "docs/DATA_DICTIONARY.md",
     "docs/WINDOWS_DEPLOYMENT.md", "docs/QUALITY_GATE.md", "docs/FUTURE_WORK.md",
     "docs/RELEASE_NOTES.md", "docs/METHODOLOGY.md", "workspace/methodology.html", "workspace/methodology.js",
+    "docs/FORTUNE50_READINESS.md", "docs/MODEL_CARDS.md", "docs/PUBLIC_DATA_CATALOG.md",
+    "scripts/fortune50_preflight.py", "tests/test_fortune50_preflight.py",
     "accept_v1_windows.bat", "requirements-windows-tested.txt",
     "run_windows.bat", "scripts/windows_preflight.py",
 )

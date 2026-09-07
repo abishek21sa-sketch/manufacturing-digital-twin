@@ -29,6 +29,14 @@ def solve_with_scipy(problem: ScheduleProblem, time_limit: float = 30.0, mip_gap
     tard_offset = pair_offset + n_pairs
     cmax_idx = tard_offset + n_jobs
     n_vars = cmax_idx + 1
+    deviation_ids = tuple(
+        op.operation_id
+        for op in operations
+        if problem.stability_penalty > 0 and op.operation_id in problem.prior_start
+    )
+    deviation_offset = n_vars
+    deviation_idx = {operation_id: deviation_offset + i for i, operation_id in enumerate(deviation_ids)}
+    n_vars += len(deviation_ids)
 
     c = np.zeros(n_vars)
     integrality = np.zeros(n_vars)
@@ -39,6 +47,8 @@ def solve_with_scipy(problem: ScheduleProblem, time_limit: float = 30.0, mip_gap
         c[tard_offset + j_idx] = pj.priority_weight * (
             problem.objective.tardiness + problem.objective.risk_tardiness * pj.risk_score
         )
+    for index in deviation_idx.values():
+        c[index] = problem.stability_penalty
 
     base_time = max(
         [problem.current_time]
@@ -63,6 +73,12 @@ def solve_with_scipy(problem: ScheduleProblem, time_limit: float = 30.0, mip_gap
     for job in problem.factory.jobs:
         for prev, nxt in zip(job.operations, job.operations[1:]):
             add({op_idx[prev.operation_id]: 1.0, op_idx[nxt.operation_id]: -1.0}, -prev.processing_time)
+
+    for operation_id, index in deviation_idx.items():
+        prior = float(problem.prior_start[operation_id])
+        # deviation >= start - prior and deviation >= prior - start
+        add({op_idx[operation_id]: 1.0, index: -1.0}, prior)
+        add({op_idx[operation_id]: -1.0, index: -1.0}, -prior)
 
     big_m = horizon
     for p_idx, (i, j) in enumerate(machine_pairs):
@@ -107,7 +123,7 @@ def solve_with_scipy(problem: ScheduleProblem, time_limit: float = 30.0, mip_gap
     status = status_map.get(int(res.status), "ERROR")
     if res.x is None:
         return ScheduleResult((), {}, {}, None, SolverEvidence(
-            "scipy-highs", status, None, getattr(res, "mip_dual_bound", None), getattr(res, "mip_gap", None), elapsed, str(res.message)
+            "scipy-highs", status, None, getattr(res, "mip_dual_bound", None), getattr(res, "mip_gap", None), elapsed, str(res.message), n_vars, len(rows)
         ), {})
 
     x = res.x
@@ -122,6 +138,8 @@ def solve_with_scipy(problem: ScheduleProblem, time_limit: float = 30.0, mip_gap
         "makespan": makespan,
         "total_tardiness": sum(tardiness.values()),
         "risk_weighted_tardiness": sum(problem.planning_job(j).risk_score * t for j, t in tardiness.items()),
+        "schedule_stability": sum(abs(float(x[op_idx[operation_id]]) - float(problem.prior_start[operation_id])) for operation_id in deviation_ids),
+        "stability_penalty": float(sum(c[index] * x[index] for index in deviation_idx.values())),
     }
     return ScheduleResult(
         scheduled, completion, tardiness, makespan,
@@ -129,6 +147,6 @@ def solve_with_scipy(problem: ScheduleProblem, time_limit: float = 30.0, mip_gap
             "scipy-highs", status, float(res.fun) if res.fun is not None else None,
             float(res.mip_dual_bound) if getattr(res, "mip_dual_bound", None) is not None else None,
             float(res.mip_gap) if getattr(res, "mip_gap", None) is not None else None,
-            elapsed, str(res.message),
+            elapsed, str(res.message), n_vars, len(rows),
         ), components,
     )

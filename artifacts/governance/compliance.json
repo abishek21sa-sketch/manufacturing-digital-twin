@@ -1,0 +1,26 @@
+{
+  "project": "Manufacturing Digital Twin",
+  "signature_algorithm": "TRUST-RH",
+  "signature_coverage_percent": 98,
+  "coverage_threshold_percent": 90,
+  "coverage_gate": "PASS",
+  "regression_evidence": "91/91 tests under process-isolated native-solver execution",
+  "evidence_gate": "6/6 signature; 7/7 canonical trust; 96 trust sensitivity + 5 stability sensitivity",
+  "windows_acceptance_command": ".\\RUN_ACCEPTANCE.cmd from the extracted MDT_V1_STABLE_PY314 top-level folder",
+  "windows_execution_status": "PENDING_USER_WINDOWS_STABLE_BUILD",
+  "mandatory_engineering_release_status": "PASS_EXCEPT_WINDOWS_EXECUTION",
+  "null_hypotheses": [
+    "H0-D1: TRUST-RH does not reduce unsafe optimizer authorization under stale, inconsistent, or incomplete twin evidence versus an ungated optimizer.",
+    "H0-D2: Stability-aware receding-horizon scheduling does not improve schedule-churn/objective trade-offs versus zero-stability reoptimization."
+  ],
+  "evidence_class_discipline": "PASS",
+  "llm_is_decision_engine": false,
+  "human_review_gate_required": true,
+  "research_upgrade_status": "PARTIAL_DEFERRED_NOT_RELEASE_BLOCKING",
+  "runtime_compatibility": {
+    "python": "3.14",
+    "numpy": "2.3.5",
+    "numpy_policy": "pin <2.4 for Windows/Python 3.14 MDT release stability",
+    "coverage": "coverage.py API; pytest-cov not required for Windows acceptance"
+  }
+}

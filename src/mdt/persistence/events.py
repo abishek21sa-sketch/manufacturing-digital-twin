@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from datetime import datetime, timezone
-from sqlalchemy import Float, Integer, String, Text, create_engine, select
+from sqlalchemy import Float, Integer, String, Text, create_engine, select, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
 
 from mdt.domain import EventType, HumanDisposition, ManufacturingEvent
@@ -43,10 +44,48 @@ class DecisionRunRow(Base):
     disposition_note: Mapped[str | None] = mapped_column(Text)
 
 
+class IngestionBatchRow(Base):
+    __tablename__ = "event_ingestion_batches"
+    sequence_no: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    idempotency_key: Mapped[str] = mapped_column(String(256), unique=True, nullable=False, index=True)
+    source_system: Mapped[str] = mapped_column(String(128), nullable=False)
+    schema_version: Mapped[str] = mapped_column(String(32), nullable=False)
+    accepted_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    response_json: Mapped[str] = mapped_column(Text, nullable=False)
+    request_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    created_at_utc: Mapped[str] = mapped_column(String(64), nullable=False)
+
+
+def _ingestion_request_hash(
+    events: list[ManufacturingEvent], *, source_system: str, schema_version: str
+) -> str:
+    canonical_events = [
+        {
+            "event_id": event.event_id,
+            "event_type": event.event_type.value,
+            "timestamp": event.timestamp,
+            "job_id": event.job_id,
+            "operation_id": event.operation_id,
+            "machine_id": event.machine_id,
+            "payload": event.payload,
+        }
+        for event in events
+    ]
+    canonical = json.dumps(
+        {"source_system": source_system, "schema_version": schema_version, "events": canonical_events},
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    )
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 class EventRepository:
-    def __init__(self, database_url: str):
+    def __init__(self, database_url: str, *, create_schema: bool = True):
         self.engine = create_engine(database_url, future=True)
-        Base.metadata.create_all(self.engine)
+        self.create_schema = create_schema
+        if create_schema:
+            Base.metadata.create_all(self.engine)
 
     def append(self, event: ManufacturingEvent) -> None:
         with Session(self.engine) as session:
@@ -61,6 +100,69 @@ class EventRepository:
             )
             session.add(row)
             session.commit()
+
+    def append_many(
+        self,
+        events: list[ManufacturingEvent],
+        *,
+        source_system: str,
+        schema_version: str,
+        idempotency_key: str,
+    ) -> dict:
+        if not events:
+            raise ValueError("at least one event is required")
+        event_ids = [event.event_id for event in events]
+        if len(set(event_ids)) != len(event_ids):
+            raise ValueError("event_id must be unique within an ingestion batch")
+        request_hash = _ingestion_request_hash(
+            events, source_system=source_system, schema_version=schema_version
+        )
+        with Session(self.engine) as session:
+            with session.begin():
+                existing_batch = session.scalar(
+                    select(IngestionBatchRow).where(IngestionBatchRow.idempotency_key == idempotency_key)
+                )
+                if existing_batch is not None:
+                    if existing_batch.request_hash != request_hash:
+                        raise ValueError("idempotency key already exists with a different request")
+                    return json.loads(existing_batch.response_json)
+                existing_ids = set(
+                    session.scalars(select(EventRow.event_id).where(EventRow.event_id.in_(event_ids))).all()
+                )
+                if existing_ids:
+                    raise ValueError(f"event_id already exists: {', '.join(sorted(existing_ids))}")
+                response = {
+                    "status": "accepted",
+                    "idempotency_key": idempotency_key,
+                    "source_system": source_system,
+                    "schema_version": schema_version,
+                    "accepted_event_ids": event_ids,
+                    "accepted_count": len(events),
+                }
+                for event in events:
+                    session.add(
+                        EventRow(
+                            event_id=event.event_id,
+                            event_type=event.event_type.value,
+                            event_timestamp=event.timestamp,
+                            job_id=event.job_id,
+                            operation_id=event.operation_id,
+                            machine_id=event.machine_id,
+                            payload_json=json.dumps(event.payload, sort_keys=True),
+                        )
+                    )
+                session.add(
+                    IngestionBatchRow(
+                        idempotency_key=idempotency_key,
+                        source_system=source_system,
+                        schema_version=schema_version,
+                        accepted_count=len(events),
+                        response_json=json.dumps(response, sort_keys=True),
+                        request_hash=request_hash,
+                        created_at_utc=datetime.now(timezone.utc).isoformat(),
+                    )
+                )
+                return response
 
     def list_events(self) -> list[ManufacturingEvent]:
         with Session(self.engine) as session:
@@ -80,6 +182,39 @@ class EventRepository:
 
     def count(self) -> int:
         return len(self.list_events())
+
+    def ingestion_batch(
+        self,
+        idempotency_key: str,
+        *,
+        events: list[ManufacturingEvent] | None = None,
+        source_system: str | None = None,
+        schema_version: str | None = None,
+    ) -> dict | None:
+        with Session(self.engine) as session:
+            row = session.scalar(select(IngestionBatchRow).where(IngestionBatchRow.idempotency_key == idempotency_key))
+        if row is None:
+            return None
+        if events is not None and source_system is not None and schema_version is not None:
+            request_hash = _ingestion_request_hash(
+                events, source_system=source_system, schema_version=schema_version
+            )
+            if row.request_hash != request_hash:
+                raise ValueError("idempotency key already exists with a different request")
+        return json.loads(row.response_json)
+
+    def healthcheck(self) -> dict:
+        with self.engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+        return {"status": "ok", "database_url_scheme": self.engine.url.drivername}
+
+    def schema_info(self) -> dict:
+        return {
+            "revision": "mdt-rc4-hardening",
+            "tables": ["manufacturing_events", "decision_runs", "event_ingestion_batches"],
+            "migration_policy": "production deployments run reviewed Alembic migrations; create_all is local-only compatibility",
+            "auto_create_schema": self.create_schema,
+        }
 
     def save_decision_run(
         self,

@@ -9,7 +9,7 @@ from mdt import __version__
 from mdt.config import Settings
 
 
-def _check_port_available(host: str = "127.0.0.1", port: int = 8000) -> None:
+def _check_port_available(host: str = "127.0.0.1", port: int = 8010) -> None:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         try:
             sock.bind((host, port))
@@ -65,7 +65,7 @@ def main() -> None:
         "version": __version__,
         "python": sys.version.split()[0],
         "gemini_key_configured": bool(settings.gemini_api_key),
-        "port_8000_available": not any("8000" in item for item in failures),
+        "port_8010_available": not any("8010" in item for item in failures),
         "gurobi_preflight_status": gurobi_status,
     }
     print(json.dumps(evidence, indent=2))

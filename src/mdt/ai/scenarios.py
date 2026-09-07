@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from mdt.domain import FactoryModel, JobSpec, OperationSpec
-from mdt.optimization.model import PlanningJob, ScheduleProblem
+from mdt.optimization.model import PlanningJob, ScheduleProblem, ScheduledOperation
 
 
 FEATURE_NAMES = (
@@ -27,6 +27,7 @@ FEATURE_NAMES = (
 class HeuristicSchedule:
     completion: dict[str, float]
     makespan: float
+    operations: tuple[ScheduledOperation, ...] = ()
 
 
 def _machine_loads(factory: FactoryModel) -> dict[str, float]:
@@ -81,6 +82,7 @@ def heuristic_dispatch(problem: ScheduleProblem, rule: str = "SPT") -> Heuristic
     job_ready = {j.job_id: max(problem.current_time, problem.planning_job(j.job_id).release_time) for j in problem.factory.jobs}
     next_index = {j.job_id: 0 for j in problem.factory.jobs}
     completion: dict[str, float] = {}
+    scheduled: list[ScheduledOperation] = []
     total_ops = problem.factory.operation_count
 
     for _ in range(total_ops):
@@ -103,12 +105,13 @@ def heuristic_dispatch(problem: ScheduleProblem, rule: str = "SPT") -> Heuristic
         _, _, job, op = min(candidates, key=lambda item: (item[0], item[1]))
         start = max(job_ready[job.job_id], machine_available[op.machine_id])
         finish = start + op.processing_time
+        scheduled.append(ScheduledOperation(op.operation_id, job.job_id, op.machine_id, op.sequence, start, finish))
         machine_available[op.machine_id] = finish
         job_ready[job.job_id] = finish
         next_index[job.job_id] += 1
         if next_index[job.job_id] == len(job.operations):
             completion[job.job_id] = finish
-    return HeuristicSchedule(completion, max(completion.values()))
+    return HeuristicSchedule(completion, max(completion.values()), tuple(scheduled))
 
 
 def perturb_factory(factory: FactoryModel, rng: np.random.Generator) -> FactoryModel:

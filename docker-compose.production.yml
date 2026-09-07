@@ -1,0 +1,59 @@
+services:
+  database:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mdt}
+      POSTGRES_USER: ${POSTGRES_USER:-mdt}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in the deployment environment}
+    volumes:
+      - mdt-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    build: .
+    restart: "no"
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      MDT_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-mdt}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB:-mdt}
+    command: ["alembic", "-c", "alembic.ini", "upgrade", "head"]
+
+  mdt:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      MDT_ENV: production
+      MDT_INSTANCE_ID: ${MDT_INSTANCE_ID:-mdt-prod-01}
+      MDT_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-mdt}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB:-mdt}
+      MDT_AUTH_MODE: api_key
+      MDT_API_KEY: ${MDT_API_KEY:?set MDT_API_KEY}
+      MDT_READONLY_API_KEY: ${MDT_READONLY_API_KEY:?set MDT_READONLY_API_KEY}
+      MDT_ADMIN_API_KEY: ${MDT_ADMIN_API_KEY:?set MDT_ADMIN_API_KEY}
+      MDT_ALLOWED_HOSTS: ${MDT_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      MDT_CORS_ORIGINS: ${MDT_CORS_ORIGINS:-}
+      MDT_SCHEMA_REVISION: ${MDT_SCHEMA_REVISION:-mdt-rc4-hardening}
+      MDT_EVENT_CONTRACT_VERSION: 1.0.0
+      MDT_AUTO_CREATE_SCHEMA: "false"
+      MDT_COPILOT_ENABLED: ${MDT_COPILOT_ENABLED:-false}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    ports:
+      - "${MDT_PORT:-8010}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mdt-postgres:

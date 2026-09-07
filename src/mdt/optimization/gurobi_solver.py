@@ -40,6 +40,7 @@ def solve_with_gurobi(problem: ScheduleProblem, time_limit: float = 30.0, mip_ga
             model.Params.MIPGap = float(mip_gap)
             starts = {}
             tard = {}
+            deviations = {}
             for op in operations:
                 pj = problem.planning_job(op.job_id)
                 starts[op.operation_id] = model.addVar(
@@ -47,6 +48,8 @@ def solve_with_gurobi(problem: ScheduleProblem, time_limit: float = 30.0, mip_ga
                     ub=horizon,
                     name=f"s[{op.operation_id}]",
                 )
+                if problem.stability_penalty > 0 and op.operation_id in problem.prior_start:
+                    deviations[op.operation_id] = model.addVar(lb=0.0, ub=horizon, name=f"delta[{op.operation_id}]")
             cmax = model.addVar(lb=0.0, ub=horizon, name="Cmax")
             for job in problem.factory.jobs:
                 tard[job.job_id] = model.addVar(lb=0.0, ub=horizon, name=f"T[{job.job_id}]")
@@ -54,6 +57,11 @@ def solve_with_gurobi(problem: ScheduleProblem, time_limit: float = 30.0, mip_ga
             for job in problem.factory.jobs:
                 for prev, nxt in zip(job.operations, job.operations[1:]):
                     model.addConstr(starts[nxt.operation_id] >= starts[prev.operation_id] + prev.processing_time, name=f"prec[{prev.operation_id},{nxt.operation_id}]")
+
+            for operation_id, deviation in deviations.items():
+                prior = float(problem.prior_start[operation_id])
+                model.addConstr(starts[operation_id] - deviation <= prior, name=f"stability_pos[{operation_id}]")
+                model.addConstr(prior - starts[operation_id] - deviation <= 0.0, name=f"stability_neg[{operation_id}]")
 
             big_m = horizon
             for machine in problem.factory.machines:
@@ -82,6 +90,8 @@ def solve_with_gurobi(problem: ScheduleProblem, time_limit: float = 30.0, mip_ga
                 pj = problem.planning_job(job.job_id)
                 coefficient = pj.priority_weight * (problem.objective.tardiness + problem.objective.risk_tardiness * pj.risk_score)
                 objective += coefficient * tard[job.job_id]
+            if deviations:
+                objective += problem.stability_penalty * gp.quicksum(deviations.values())
             model.setObjective(objective, GRB.MINIMIZE)
             model.optimize()
             elapsed = perf_counter() - started
@@ -89,15 +99,16 @@ def solve_with_gurobi(problem: ScheduleProblem, time_limit: float = 30.0, mip_ga
             status_map = {GRB.OPTIMAL: "OPTIMAL", GRB.INFEASIBLE: "INFEASIBLE", GRB.UNBOUNDED: "UNBOUNDED", GRB.INF_OR_UNBD: "ERROR", GRB.TIME_LIMIT: "TIME_LIMIT", GRB.INTERRUPTED: "FEASIBLE" if model.SolCount > 0 else "ERROR"}
             status = status_map.get(model.Status, "FEASIBLE" if model.SolCount > 0 else "ERROR")
             if model.SolCount <= 0:
-                evidence = SolverEvidence("gurobi", status, None, float(model.ObjBound) if hasattr(model, "ObjBound") else None, None, elapsed, str(model.Status))
+                evidence = SolverEvidence("gurobi", status, None, float(model.ObjBound) if hasattr(model, "ObjBound") else None, None, elapsed, str(model.Status), model.NumVars, model.NumConstrs)
                 return ScheduleResult((), {}, {}, None, evidence, {})
 
             scheduled = tuple(ScheduledOperation(op.operation_id, op.job_id, op.machine_id, op.sequence, float(starts[op.operation_id].X), float(starts[op.operation_id].X + op.processing_time)) for op in operations)
             completion = {job.job_id: next(o.finish for o in scheduled if o.operation_id == job.operations[-1].operation_id) for job in problem.factory.jobs}
             tardiness = {j.job_id: max(0.0, completion[j.job_id] - problem.planning_job(j.job_id).due_time) for j in problem.factory.jobs}
             makespan = max(completion.values())
-            components = {"makespan": makespan, "total_tardiness": sum(tardiness.values()), "risk_weighted_tardiness": sum(problem.planning_job(j).risk_score * t for j, t in tardiness.items())}
-            evidence = SolverEvidence("gurobi", status, float(model.ObjVal), float(model.ObjBound), float(model.MIPGap) if model.IsMIP and model.SolCount > 0 else 0.0, float(model.Runtime), str(model.Status))
+            stability = sum(abs(float(starts[operation_id].X) - float(problem.prior_start[operation_id])) for operation_id in deviations)
+            components = {"makespan": makespan, "total_tardiness": sum(tardiness.values()), "risk_weighted_tardiness": sum(problem.planning_job(j).risk_score * t for j, t in tardiness.items()), "schedule_stability": stability, "stability_penalty": problem.stability_penalty * stability}
+            evidence = SolverEvidence("gurobi", status, float(model.ObjVal), float(model.ObjBound), float(model.MIPGap) if model.IsMIP and model.SolCount > 0 else 0.0, float(model.Runtime), str(model.Status), model.NumVars, model.NumConstrs)
             return ScheduleResult(scheduled, completion, tardiness, makespan, evidence, components)
     except GurobiUnavailable:
         raise

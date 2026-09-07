@@ -18,7 +18,7 @@ class TwinService:
         self.settings = settings
         source = settings.project_root / "data" / "external" / "orlib" / "jobshop1.txt"
         self.model = load_orlib_instance(source, settings.benchmark_instance)
-        self.repository = EventRepository(settings.database_url)
+        self.repository = EventRepository(settings.database_url, create_schema=settings.auto_create_schema)
         self.engine = TwinEngine(self.model)
         self.engine.replay(self.repository.list_events())
         self._closed = False

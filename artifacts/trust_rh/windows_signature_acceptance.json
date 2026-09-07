@@ -1,0 +1,13 @@
+{
+  "gate": "TRUST-RH Windows standalone signature acceptance",
+  "coverage_percent": 98.24561403508773,
+  "coverage_threshold_percent": 90.0,
+  "checks": {
+    "authorized_optimal": true,
+    "untrusted_does_not_execute": true,
+    "validation_edges": true,
+    "ui_operator_surface": true,
+    "ui_gated_api_contract": true,
+    "signature_coverage_ge_90": true
+  }
+}

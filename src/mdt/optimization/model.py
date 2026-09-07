@@ -36,6 +36,12 @@ class ScheduleProblem:
     current_time: float = 0.0
     machine_available_from: dict[str, float] = field(default_factory=dict)
     max_total_tardiness: float | None = None
+    # Optional incumbent schedule used by TRUST-RH to price schedule
+    # displacement. A missing entry means the operation has no prior plan to
+    # protect. Keeping this explicit prevents a stability metric from becoming
+    # an opaque post-hoc score.
+    prior_start: dict[str, float] = field(default_factory=dict)
+    stability_penalty: float = 0.0
 
     def validate(self) -> None:
         self.objective.validate()
@@ -54,6 +60,14 @@ class ScheduleProblem:
                 raise ValueError(f"machine {machine_id} availability precedes current_time")
         if self.max_total_tardiness is not None and self.max_total_tardiness < 0:
             raise ValueError("max_total_tardiness must be non-negative when provided")
+        if self.stability_penalty < 0:
+            raise ValueError("stability_penalty must be non-negative")
+        operation_ids = {op.operation_id for job in self.factory.jobs for op in job.operations}
+        unknown_prior = set(self.prior_start) - operation_ids
+        if unknown_prior:
+            raise ValueError(f"prior_start contains unknown operations: {sorted(unknown_prior)}")
+        if any(float(value) < 0 for value in self.prior_start.values()):
+            raise ValueError("prior_start values must be non-negative")
         for job in self.jobs:
             if job.release_time < 0 or job.due_time < job.release_time:
                 raise ValueError(f"invalid planning times for {job.job_id}")
@@ -88,6 +102,8 @@ class SolverEvidence:
     mip_gap: float | None
     solve_time_seconds: float
     raw_status: str
+    variable_count: int | None = None
+    constraint_count: int | None = None
 
 
 @dataclass(frozen=True)

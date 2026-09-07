@@ -1,0 +1,51 @@
+[
+  {
+    "name": "fresh_complete",
+    "expected": "AUTHORIZED",
+    "actual": "AUTHORIZED",
+    "passed": true,
+    "score": 1.0
+  },
+  {
+    "name": "moderately_aged",
+    "expected": "AUTHORIZED",
+    "actual": "AUTHORIZED",
+    "passed": true,
+    "score": 0.8419698602928606
+  },
+  {
+    "name": "aging_review",
+    "expected": "HUMAN_REVIEW",
+    "actual": "HUMAN_REVIEW",
+    "passed": true,
+    "score": 0.7811286178610307
+  },
+  {
+    "name": "strict_policy_review",
+    "expected": "HUMAN_REVIEW",
+    "actual": "HUMAN_REVIEW",
+    "passed": true,
+    "score": 0.8419698602928606
+  },
+  {
+    "name": "ledger_mismatch",
+    "expected": "BLOCKED",
+    "actual": "BLOCKED",
+    "passed": true,
+    "score": 0.75
+  },
+  {
+    "name": "evidence_gap",
+    "expected": "BLOCKED",
+    "actual": "BLOCKED",
+    "passed": true,
+    "score": 0.9
+  },
+  {
+    "name": "stale_strict_block",
+    "expected": "BLOCKED",
+    "actual": "BLOCKED",
+    "passed": true,
+    "score": 0.7516844867497714
+  }
+]

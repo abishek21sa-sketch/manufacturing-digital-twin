@@ -7,9 +7,10 @@
   <title>Manufacturing Digital Twin — Operations Workbench</title>
   <link rel="stylesheet" href="/workspace/assets/styles.css" />
 </head>
-<body class="app-body">
+<body class="app-body enterprise-console">
   <header class="app-header">
     <div class="brand-block">
+      <div class="console-brand-line"><span class="brand-mark" aria-hidden="true">M</span><span>OPERATIONS CONTROL TOWER</span><span class="brand-separator">/</span><span>DECISION INTELLIGENCE</span></div>
       <div class="eyebrow">MANUFACTURING DIGITAL TWIN · V1.0</div>
       <h1>Future-State Production &amp; Schedule-Recovery Laboratory</h1>
       <p class="header-subtitle">Synchronized shop-floor state → predictive risk → finite-capacity recovery → stochastic policy validation → human decision.</p>
@@ -22,12 +23,27 @@
       </nav>
       <div class="status-cluster" aria-label="System status">
         <span id="apiStatus" class="status-pill waiting">CONNECTING</span>
+        <span id="demoModeBadge" class="meta-pill demo-mode hidden">DETERMINISTIC DEMO</span>
         <span id="solverStatus" class="meta-pill">solver —</span>
         <span id="geminiStatus" class="meta-pill">Gemini —</span>
         <span id="versionStatus" class="meta-pill">v—</span>
       </div>
     </div>
   </header>
+
+  <section class="command-bar" aria-label="Operations command bar">
+    <div class="command-context"><span class="live-indicator"></span><strong>LIVE WORKSPACE</strong><span class="command-divider"></span><span>FT06 benchmark · synthetic future-state laboratory</span><span class="command-boundary">SYNTHETIC / REPRODUCIBLE</span></div>
+    <nav class="command-links" aria-label="Workbench sections">
+      <a href="#scenarioBench">Scenario lab</a><a href="#operationalContext">Control room</a><a href="#decisionSurface">Decision center</a><a href="#evidenceHistory">Evidence room</a>
+    </nav>
+  </section>
+
+  <section class="demo-runbook" aria-label="Recommended demonstration flow">
+    <div class="runbook-intro"><span class="section-kicker">OPERATOR RUNBOOK</span><strong>From future-state question to governed decision</strong><small>Three deliberate steps. Every result stays labeled as observed, predicted, optimized or simulated.</small></div>
+    <a href="#scenarioBench"><span>01</span><b>Define</b><small>Set the future</small></a>
+    <a href="#operationalContext"><span>02</span><b>Observe</b><small>Read the twin</small></a>
+    <a href="#decisionSurface"><span>03</span><b>Decide</b><small>Compare policy</small></a>
+  </section>
 
   <main class="workspace-main">
     <section class="twin-ribbon" aria-label="Current synchronized twin state">
@@ -44,7 +60,7 @@
       <div class="ribbon-stat emphasis"><span>Human gate</span><strong id="reviewState">PENDING</strong><small>no autonomous deployment</small></div>
     </section>
 
-    <section class="scenario-card workbench-card" aria-label="Scenario definition">
+    <section id="scenarioBench" class="scenario-card workbench-card" aria-label="Scenario definition">
       <div class="section-heading scenario-heading">
         <div>
           <span class="section-kicker">01 · SCENARIO BENCH</span>
@@ -63,14 +79,93 @@
         <label>Machine MTTR<input id="stressMttr" type="number" value="12" min="0.1" step="0.5"><small>stress override</small></label>
         <label>Replications<input id="replications" type="number" value="24" min="4" max="200" step="1"><small>common random numbers</small></label>
         <label>Risk aversion<input id="riskAversion" type="number" value="0.35" min="0" max="3" step="0.05"><small>CVaR weight</small></label>
+        <label>Stability penalty<input id="stabilityPenalty" type="number" value="0.25" min="0" max="100" step="0.05"><small>schedule-change price γ</small></label>
         <label>OR backend<select id="backend"><option value="auto">Auto · Gurobi preferred</option><option value="gurobi">Gurobi</option><option value="scipy">HiGHS verification</option></select><small>finite-capacity MILP</small></label>
       </div>
+      <div class="scenario-presets" aria-label="Scenario presets">
+        <div class="preset-intro"><span>QUICK SCENARIOS</span><small>Load a defensible starting point</small></div>
+        <button type="button" class="preset-button active" data-preset="baseline">Baseline</button>
+        <button type="button" class="preset-button" data-preset="reliability">Reliability shock</button>
+        <button type="button" class="preset-button" data-preset="demand">Due-date pressure</button>
+        <button type="button" class="preset-button" data-preset="variability">Process variability</button>
+        <span id="scenarioPresetStatus" class="preset-status">Baseline benchmark</span>
+      </div>
       <div class="action-bar">
-        <button id="nominalBtn" class="primary"><span>01</span> Build synchronized recovery</button>
-        <button id="trajectoryBtn"><span>02</span> Run representative future</button>
-        <button id="stressBtn"><span>03</span> Stress-test four policies</button>
+        <button id="nominalBtn" class="primary workflow-step"><span>01</span> Build synchronized recovery</button>
+        <button id="trajectoryBtn" class="workflow-step"><span>02</span> Run representative future</button>
+        <button id="stressBtn" class="workflow-step"><span>03</span> Stress-test four policies</button>
+        <span id="workflowStatus" class="workflow-status" role="status" aria-live="polite">STEP 01 READY · baseline recovery loaded</span>
         <a class="text-action" href="/methodology#decision-chain">How the decision is computed →</a>
       </div>
+    </section>
+
+    <section id="operationalContext" class="control-room-grid" aria-label="Twin operating context">
+      <article class="workbench-card machine-board-card">
+        <div class="section-heading compact-heading">
+          <div><span class="section-kicker">LIVE / SYNCHRONIZED TWIN</span><h2>What the plant is believed to be doing</h2></div>
+          <div class="evidence-label decision">OBSERVED / INGESTED</div>
+        </div>
+        <div id="machineBoard" class="machine-board"><p class="muted">Loading machine state…</p></div>
+        <div class="evidence-class-row"><span>Observed / ingested</span><span>Predicted</span><span>Optimized</span><span>Simulated</span></div>
+      </article>
+      <article class="workbench-card constraint-card">
+        <div class="section-heading compact-heading">
+          <div><span class="section-kicker">FINITE-CAPACITY CONSTRAINTS</span><h2>Binding capacity and operating slack</h2></div>
+          <div class="evidence-label decision">CALCULATED IE EVIDENCE</div>
+        </div>
+        <div id="constraintTable" class="table-wrap"><p class="muted">Loading capacity plan…</p></div>
+        <div id="recedingHorizon" class="horizon-strip"><span>twin now</span><i></i><span>committed near term</span><i></i><span>optimization horizon</span><i></i><span>uncertain future</span></div>
+      </article>
+    </section>
+
+    <section class="workbench-card trust-rh-card" id="trustRhSurface" aria-label="TRUST-RH authorization gate">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">TRUST-RH AUTHORIZATION GATE</span>
+          <h2>Should this twin be trusted enough to optimize?</h2>
+          <p>Structural consistency, event-ledger agreement, model evidence coverage, and freshness determine whether recovery optimization may execute. Human review remains mandatory.</p>
+        </div>
+        <div id="trustRhBadge" class="evidence-label decision">ASSESSING</div>
+      </div>
+      <div class="scenario-grid">
+        <label>Freshness horizon<input id="trustFreshnessHorizon" type="number" value="24" min="1" step="1"><small>event-age decay horizon</small></label>
+        <label>Authorize threshold<input id="trustAuthorizeThreshold" type="number" value="0.82" min="0" max="1" step="0.01"><small>optimizer enable gate</small></label>
+        <label>Review threshold<input id="trustReviewThreshold" type="number" value="0.62" min="0" max="1" step="0.01"><small>human-review band</small></label>
+      </div>
+      <div class="action-bar">
+        <button id="assessTrustBtn"><span>T</span> Assess twin trust</button>
+        <button id="trustedRecoveryBtn" class="primary"><span>RH</span> Run trust-gated recovery</button>
+      </div>
+      <div class="packet-grid">
+        <div><span>Trust score</span><strong id="trustRhScore">—</strong></div>
+        <div><span>Structural consistency</span><strong id="trustRhStructural">—</strong></div>
+        <div><span>Ledger consistency</span><strong id="trustRhLedger">—</strong></div>
+        <div><span>Model evidence coverage</span><strong id="trustRhEvidence">—</strong></div>
+        <div><span>Freshness</span><strong id="trustRhFreshness">—</strong></div>
+        <div><span>Optimizer</span><strong id="trustRhOptimizer">NOT RUN</strong></div>
+      </div>
+      <div id="trustRhReasons" class="muted">No trust assessment yet.</div>
+      <p class="muted">Counterfactual: change the freshness horizon/thresholds and re-assess. A stale or contradictory twin must block optimization rather than merely lower a KPI.</p>
+    </section>
+
+    <section class="traceability-grid" aria-label="Decision traceability">
+      <article class="workbench-card ledger-card">
+        <div class="section-heading compact-heading">
+          <div><span class="section-kicker">TRACEABILITY · EVENT LEDGER</span><h2>Event → state change → current twin</h2></div>
+          <button id="refreshLedgerBtn" class="small-button">Refresh ledger</button>
+        </div>
+        <p class="muted">Every accepted event is replayed in order. Historical events are immutable; the reconstructed state is the analytical input.</p>
+        <div id="eventLedger" class="table-wrap"><p class="muted">Loading replay chain…</p></div>
+      </article>
+      <article class="workbench-card stability-card">
+        <div class="section-heading compact-heading">
+          <div><span class="section-kicker">TRACEABILITY · PLAN DIFFERENCE</span><h2>Schedule nervousness made visible</h2></div>
+          <div id="stabilityEvidenceLabel" class="evidence-label decision">CALCULATED CHANGE EVIDENCE</div>
+        </div>
+        <p class="muted">The recovery plan is compared with the status-quo SPT schedule. γ is an explicit MILP displacement penalty, not a cosmetic score.</p>
+        <div id="stabilityMetrics" class="stability-metrics"><p class="muted">Run recovery to calculate schedule change evidence.</p></div>
+        <div id="scheduleChangeList" class="change-list"></div>
+      </article>
     </section>
 
     <section class="analysis-grid">
@@ -112,7 +207,7 @@
       </aside>
     </section>
 
-    <section class="decision-card workbench-card">
+    <section id="decisionSurface" class="decision-card workbench-card">
       <div class="section-heading">
         <div>
           <span class="section-kicker">04 · ROBUST POLICY VERDICT</span>
@@ -137,6 +232,7 @@
             <div><span>Evidence level</span><strong id="decisionEvidence">—</strong></div>
           </div>
           <details class="evidence-details"><summary>Assumptions &amp; trade-offs</summary><div id="decisionDetails"></div></details>
+          <div class="button-row evidence-actions"><button id="downloadEvidenceBtn">Download decision evidence JSON</button></div>
         </div>
         <aside class="human-review-panel">
           <span class="section-kicker">HUMAN DECISION GATE</span>
@@ -175,6 +271,28 @@
         <button id="copilotExplainBtn">Explain current engineering evidence</button>
         <div id="copilotResult" class="copilot-result">Gemini status loading…</div>
       </article>
+      <article class="workbench-card dataset-bay">
+        <div class="section-heading compact-heading">
+          <div><span class="section-kicker">07 · SYNTHETIC DATA PACK</span><h2>Demo and research data</h2></div>
+          <div class="evidence-label simulated">SYNTHETIC / REPRODUCIBLE</div>
+        </div>
+        <p>The portfolio dataset is designed to look operationally plausible for demonstrations while remaining clearly synthetic. It is summarized here, downloadable, and never committed to the live twin ledger.</p>
+        <div id="syntheticDatasetSummary" class="dataset-summary"><p class="muted">Loading dataset integrity…</p></div>
+        <div class="button-row">
+          <a id="syntheticDatasetDownload" class="download-button" href="/v1/data/synthetic/download">Download 150,000-row CSV</a>
+          <a class="mini-link" href="/methodology">provenance and evidence boundary →</a>
+        </div>
+        <div id="syntheticDatasetBoundary" class="dataset-boundary">Synthetic demo data only · no plant telemetry · no realized business claim.</div>
+      </article>
+    </section>
+
+    <section id="evidenceHistory" class="workbench-card audit-history" aria-label="Decision history">
+      <div class="section-heading compact-heading">
+        <div><span class="section-kicker">AUDIT · DECISION HISTORY</span><h2>Auditable recovery runs</h2></div>
+        <button id="refreshHistoryBtn" class="small-button">Refresh history</button>
+      </div>
+      <p class="muted">Run identity, twin version, solver evidence, recommendation, and human disposition are retained together for review.</p>
+      <div id="decisionHistory" class="table-wrap"><p class="muted">Loading decision history…</p></div>
     </section>
   </main>
 

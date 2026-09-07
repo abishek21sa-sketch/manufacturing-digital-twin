@@ -7,7 +7,8 @@ if not exist ".venv\Scripts\python.exe" (
 )
 call .venv\Scripts\activate.bat || goto :fail
 python -m pip install -r requirements-windows-tested.txt || goto :fail
-python -m pip install -e . --no-deps || goto :fail
+python -m pip install -e . --no-deps --no-build-isolation || goto :fail
+python -I scripts\windows_native_runtime_smoke.py || goto :fail
 
 rem Fail fast on local contamination, missing Gemini configuration, Gurobi
 rem license problems, or a busy workspace port BEFORE any long test suite.

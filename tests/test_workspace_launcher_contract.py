@@ -17,6 +17,22 @@ def test_launcher_waits_for_health_before_browser(root: Path):
     assert 'httpx.get(METHODOLOGY_URL' in text
 
 
+def test_launcher_has_explicit_port_configuration_and_ephemeral_mode(root: Path):
+    text = (root / "scripts" / "launch_workspace.py").read_text(encoding="utf-8")
+    assert '"--port"' in text
+    assert "MDT_PORT" in text
+    assert "free_port" in text
+    assert "PortConfigurationError" in text
+
+
+def test_product_acceptance_checks_release_contract(root: Path):
+    text = (root / "scripts" / "product_runtime_acceptance.py").read_text(encoding="utf-8")
+    assert "REQUESTED_PORT_FREE" in text
+    assert "REQUESTED_PORT_OCCUPIED" in text
+    assert "AUTOMATIC_EPHEMERAL_PORT" in text
+    assert "NO_ORPHAN_UVICORN" in text
+
+
 def test_v1_version_labels_are_synchronized(root: Path):
     from mdt import __version__
 

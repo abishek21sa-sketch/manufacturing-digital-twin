@@ -1,0 +1,770 @@
+[
+  {
+    "age": 0,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.55,
+    "evidence_mode": "complete",
+    "score": 1.0,
+    "decision": "AUTHORIZED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.55,
+    "evidence_mode": "insufficient",
+    "score": 0.9,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.62,
+    "evidence_mode": "complete",
+    "score": 1.0,
+    "decision": "AUTHORIZED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.62,
+    "evidence_mode": "insufficient",
+    "score": 0.9,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.7,
+    "evidence_mode": "complete",
+    "score": 1.0,
+    "decision": "AUTHORIZED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.7,
+    "evidence_mode": "insufficient",
+    "score": 0.9,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.76,
+    "evidence_mode": "complete",
+    "score": 1.0,
+    "decision": "AUTHORIZED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.76,
+    "evidence_mode": "insufficient",
+    "score": 0.9,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.55,
+    "evidence_mode": "complete",
+    "score": 1.0,
+    "decision": "AUTHORIZED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.55,
+    "evidence_mode": "insufficient",
+    "score": 0.9,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.62,
+    "evidence_mode": "complete",
+    "score": 1.0,
+    "decision": "AUTHORIZED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.62,
+    "evidence_mode": "insufficient",
+    "score": 0.9,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.7,
+    "evidence_mode": "complete",
+    "score": 1.0,
+    "decision": "AUTHORIZED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.7,
+    "evidence_mode": "insufficient",
+    "score": 0.9,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.76,
+    "evidence_mode": "complete",
+    "score": 1.0,
+    "decision": "AUTHORIZED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.76,
+    "evidence_mode": "insufficient",
+    "score": 0.9,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.55,
+    "evidence_mode": "complete",
+    "score": 1.0,
+    "decision": "AUTHORIZED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.55,
+    "evidence_mode": "insufficient",
+    "score": 0.9,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.62,
+    "evidence_mode": "complete",
+    "score": 1.0,
+    "decision": "AUTHORIZED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.62,
+    "evidence_mode": "insufficient",
+    "score": 0.9,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.7,
+    "evidence_mode": "complete",
+    "score": 1.0,
+    "decision": "AUTHORIZED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.7,
+    "evidence_mode": "insufficient",
+    "score": 0.9,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.76,
+    "evidence_mode": "complete",
+    "score": 1.0,
+    "decision": "AUTHORIZED"
+  },
+  {
+    "age": 0,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.76,
+    "evidence_mode": "insufficient",
+    "score": 0.9,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.55,
+    "evidence_mode": "complete",
+    "score": 0.8419698602928606,
+    "decision": "AUTHORIZED"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.55,
+    "evidence_mode": "insufficient",
+    "score": 0.7419698602928606,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.62,
+    "evidence_mode": "complete",
+    "score": 0.8419698602928606,
+    "decision": "AUTHORIZED"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.62,
+    "evidence_mode": "insufficient",
+    "score": 0.7419698602928606,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.7,
+    "evidence_mode": "complete",
+    "score": 0.8419698602928606,
+    "decision": "AUTHORIZED"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.7,
+    "evidence_mode": "insufficient",
+    "score": 0.7419698602928606,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.76,
+    "evidence_mode": "complete",
+    "score": 0.8419698602928606,
+    "decision": "AUTHORIZED"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.76,
+    "evidence_mode": "insufficient",
+    "score": 0.7419698602928606,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.55,
+    "evidence_mode": "complete",
+    "score": 0.8419698602928606,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.55,
+    "evidence_mode": "insufficient",
+    "score": 0.7419698602928606,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.62,
+    "evidence_mode": "complete",
+    "score": 0.8419698602928606,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.62,
+    "evidence_mode": "insufficient",
+    "score": 0.7419698602928606,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.7,
+    "evidence_mode": "complete",
+    "score": 0.8419698602928606,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.7,
+    "evidence_mode": "insufficient",
+    "score": 0.7419698602928606,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.76,
+    "evidence_mode": "complete",
+    "score": 0.8419698602928606,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.76,
+    "evidence_mode": "insufficient",
+    "score": 0.7419698602928606,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.55,
+    "evidence_mode": "complete",
+    "score": 0.8419698602928606,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.55,
+    "evidence_mode": "insufficient",
+    "score": 0.7419698602928606,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.62,
+    "evidence_mode": "complete",
+    "score": 0.8419698602928606,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.62,
+    "evidence_mode": "insufficient",
+    "score": 0.7419698602928606,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.7,
+    "evidence_mode": "complete",
+    "score": 0.8419698602928606,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.7,
+    "evidence_mode": "insufficient",
+    "score": 0.7419698602928606,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.76,
+    "evidence_mode": "complete",
+    "score": 0.8419698602928606,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 24,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.76,
+    "evidence_mode": "insufficient",
+    "score": 0.7419698602928606,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.55,
+    "evidence_mode": "complete",
+    "score": 0.7838338208091532,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.55,
+    "evidence_mode": "insufficient",
+    "score": 0.6838338208091532,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.62,
+    "evidence_mode": "complete",
+    "score": 0.7838338208091532,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.62,
+    "evidence_mode": "insufficient",
+    "score": 0.6838338208091532,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.7,
+    "evidence_mode": "complete",
+    "score": 0.7838338208091532,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.7,
+    "evidence_mode": "insufficient",
+    "score": 0.6838338208091532,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.76,
+    "evidence_mode": "complete",
+    "score": 0.7838338208091532,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.76,
+    "evidence_mode": "insufficient",
+    "score": 0.6838338208091532,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.55,
+    "evidence_mode": "complete",
+    "score": 0.7838338208091532,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.55,
+    "evidence_mode": "insufficient",
+    "score": 0.6838338208091532,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.62,
+    "evidence_mode": "complete",
+    "score": 0.7838338208091532,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.62,
+    "evidence_mode": "insufficient",
+    "score": 0.6838338208091532,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.7,
+    "evidence_mode": "complete",
+    "score": 0.7838338208091532,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.7,
+    "evidence_mode": "insufficient",
+    "score": 0.6838338208091532,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.76,
+    "evidence_mode": "complete",
+    "score": 0.7838338208091532,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.76,
+    "evidence_mode": "insufficient",
+    "score": 0.6838338208091532,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.55,
+    "evidence_mode": "complete",
+    "score": 0.7838338208091532,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.55,
+    "evidence_mode": "insufficient",
+    "score": 0.6838338208091532,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.62,
+    "evidence_mode": "complete",
+    "score": 0.7838338208091532,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.62,
+    "evidence_mode": "insufficient",
+    "score": 0.6838338208091532,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.7,
+    "evidence_mode": "complete",
+    "score": 0.7838338208091532,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.7,
+    "evidence_mode": "insufficient",
+    "score": 0.6838338208091532,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.76,
+    "evidence_mode": "complete",
+    "score": 0.7838338208091532,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 48,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.76,
+    "evidence_mode": "insufficient",
+    "score": 0.6838338208091532,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.55,
+    "evidence_mode": "complete",
+    "score": 0.7545789097221836,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.55,
+    "evidence_mode": "insufficient",
+    "score": 0.6545789097221836,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.62,
+    "evidence_mode": "complete",
+    "score": 0.7545789097221836,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.62,
+    "evidence_mode": "insufficient",
+    "score": 0.6545789097221836,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.7,
+    "evidence_mode": "complete",
+    "score": 0.7545789097221836,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.7,
+    "evidence_mode": "insufficient",
+    "score": 0.6545789097221836,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.76,
+    "evidence_mode": "complete",
+    "score": 0.7545789097221836,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.8,
+    "review_threshold": 0.76,
+    "evidence_mode": "insufficient",
+    "score": 0.6545789097221836,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.55,
+    "evidence_mode": "complete",
+    "score": 0.7545789097221836,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.55,
+    "evidence_mode": "insufficient",
+    "score": 0.6545789097221836,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.62,
+    "evidence_mode": "complete",
+    "score": 0.7545789097221836,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.62,
+    "evidence_mode": "insufficient",
+    "score": 0.6545789097221836,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.7,
+    "evidence_mode": "complete",
+    "score": 0.7545789097221836,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.7,
+    "evidence_mode": "insufficient",
+    "score": 0.6545789097221836,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.76,
+    "evidence_mode": "complete",
+    "score": 0.7545789097221836,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.85,
+    "review_threshold": 0.76,
+    "evidence_mode": "insufficient",
+    "score": 0.6545789097221836,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.55,
+    "evidence_mode": "complete",
+    "score": 0.7545789097221836,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.55,
+    "evidence_mode": "insufficient",
+    "score": 0.6545789097221836,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.62,
+    "evidence_mode": "complete",
+    "score": 0.7545789097221836,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.62,
+    "evidence_mode": "insufficient",
+    "score": 0.6545789097221836,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.7,
+    "evidence_mode": "complete",
+    "score": 0.7545789097221836,
+    "decision": "HUMAN_REVIEW"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.7,
+    "evidence_mode": "insufficient",
+    "score": 0.6545789097221836,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.76,
+    "evidence_mode": "complete",
+    "score": 0.7545789097221836,
+    "decision": "BLOCKED"
+  },
+  {
+    "age": 96,
+    "authorize_threshold": 0.9,
+    "review_threshold": 0.76,
+    "evidence_mode": "insufficient",
+    "score": 0.6545789097221836,
+    "decision": "BLOCKED"
+  }
+]

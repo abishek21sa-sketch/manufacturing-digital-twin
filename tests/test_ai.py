@@ -24,7 +24,7 @@ def test_packaged_ai_artifact_and_probability_contract(ft06, root):
 
 def test_ai_validation_beats_naive_baseline(root):
     import json
-    report = json.loads((root / "docs/evidence/AI_VALIDATION.json").read_text())
+    report = json.loads((root / "docs/evidence/AI_VALIDATION.json").read_text(encoding='utf-8'))
     prod = report["production_model"]
     naive = report["class_prior_baseline"]
     challenger = report["nonlinear_challenger"]

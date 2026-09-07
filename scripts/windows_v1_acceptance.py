@@ -1,7 +1,15 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
+
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
 
 from mdt import __version__
 from mdt.ai import load_anomaly, load_bottleneck, load_bundle, load_cycle_time, score_planning_jobs
@@ -11,10 +19,16 @@ from mdt.domain import EventType, ManufacturingEvent
 from mdt.optimization import ObjectiveWeights, ScheduleProblem, gurobi_available, solve_schedule, validate_schedule
 from mdt.planning import planning_state_from_twin
 from mdt.twin import TwinEngine
+from mdt.trust import TrustDecision, assess_trust
+from mdt.trust_validation import validation_report
 
 
 def main() -> None:
-    root = Path(__file__).resolve().parents[1]
+    root = ROOT
+    native_env = {**__import__("os").environ, "PYTHONNOUSERSITE": "1", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1"}
+    subprocess.run([sys.executable, "-I", "scripts/windows_native_runtime_smoke.py"], cwd=root, check=True, env=native_env)
+    subprocess.run([sys.executable, "scripts/windows_trust_rh_signature_acceptance.py"], cwd=root, check=True, env={**__import__("os").environ, "PYTHONNOUSERSITE": "1", "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1"})
+    subprocess.run([sys.executable, "scripts/trust_rh_evidence.py"], cwd=root, check=True, env={**__import__("os").environ, "PYTHONPATH": str(root / "src")})
     if __version__ != "1.0.0":
         raise SystemExit(f"WINDOWS_V1_ENGINEERING_ACCEPTANCE=FAIL: version {__version__} != 1.0.0")
     if not gurobi_available():
@@ -97,7 +111,27 @@ def main() -> None:
         )
         for point in pareto_points
     )
+    trust_evidence = {"lateness": True, "cycle_time": True, "bottleneck": True, "anomaly": True}
+    trust_authorized = assess_trust(
+        snapshot=snapshot, factory_model=factory, ledger_events=[object()] * snapshot.event_count,
+        model_evidence=trust_evidence, reference_time=snapshot.timestamp,
+    )
+    trust_review = assess_trust(
+        snapshot=snapshot, factory_model=factory, ledger_events=[object()] * snapshot.event_count,
+        model_evidence=trust_evidence, reference_time=snapshot.timestamp + 50.0,
+    )
+    trust_blocked = assess_trust(
+        snapshot=snapshot, factory_model=factory, ledger_events=[object()] * max(0, snapshot.event_count - 1),
+        model_evidence=trust_evidence, reference_time=snapshot.timestamp,
+    )
+    trust_validation = validation_report()
+
     checks = {
+        "trust_rh_authorized_path": trust_authorized.decision == TrustDecision.AUTHORIZED,
+        "trust_rh_review_path": trust_review.decision == TrustDecision.HUMAN_REVIEW,
+        "trust_rh_blocked_path": trust_blocked.decision == TrustDecision.BLOCKED,
+        "trust_rh_canonical_validation": trust_validation["canonical_passed"] == trust_validation["canonical_total"] == 7,
+        "trust_rh_sensitivity_96": trust_validation["sensitivity_cases"] == 96,
         "gurobi_no_regret_tardiness": guarded_gurobi["optimized"]["total_tardiness"] <= guarded_gurobi["baseline"]["total_tardiness"] + 1e-6,
         "highs_no_regret_tardiness": guarded_highs["optimized"]["total_tardiness"] <= guarded_highs["baseline"]["total_tardiness"] + 1e-6,
         "gurobi_declared_objective_improves": guarded_gurobi["optimized"]["solver"]["objective_value"] <= guarded_gurobi["baseline"]["objective_value"] + 1e-6,
@@ -139,6 +173,12 @@ def main() -> None:
         "pareto_frontier": pareto_points,
         "stochastic_policy_selection": selection,
         "recommended_policy": stress["stress_test"]["recommended_policy"],
+        "trust_rh": {
+            "authorized": trust_authorized.to_dict(),
+            "review": trust_review.to_dict(),
+            "blocked": trust_blocked.to_dict(),
+            "validation": trust_validation,
+        },
         "checks": checks,
     }
     print(json.dumps(evidence, indent=2))

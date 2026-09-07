@@ -75,6 +75,11 @@ def _state_id(snapshot: TwinSnapshot) -> str:
     return sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()[:16]
 
 
+def snapshot_state_id(snapshot: TwinSnapshot) -> str:
+    """Stable content identity for an event-sourced twin snapshot."""
+    return _state_id(snapshot)
+
+
 def planning_state_from_twin(
     factory: FactoryModel,
     snapshot: TwinSnapshot,

@@ -26,8 +26,10 @@ def main() -> None:
     run([sys.executable, "scripts/static_gate.py"], root, env)
     run([sys.executable, "scripts/frontend_check.py"], root, env)
     run([sys.executable, "-m", "compileall", "-q", "src", "tests", "scripts"], root, env)
+    run([sys.executable, "scripts/fortune50_preflight.py"], root, env)
     run([sys.executable, "scripts/public_release_check.py"], root, env)
     run([sys.executable, "scripts/runtime_smoke.py"], root, env)
+    run([sys.executable, "scripts/trust_rh_evidence.py"], root, env)
 
     # The long deterministic release suite runs only after all fast/runtime
     # preconditions above have passed.

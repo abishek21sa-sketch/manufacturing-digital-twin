@@ -5,7 +5,7 @@ Windows is the required local operating-system target for V1.0.
 ## Prerequisites
 
 - Windows 10/11;
-- Python 3.14 recommended (project metadata supports Python 3.11+);
+- Python 3.14 recommended (project metadata targets Python 3.14);
 - a valid local Gurobi license for the primary optimization path;
 - internet access only for initial package installation and optional Gemini API calls;
 - Gemini API key only if the optional interrogation layer is used.
@@ -39,7 +39,7 @@ Gurobi credentials/license material are never stored in this repository. The app
 run_windows.bat
 ```
 
-The server binds to `127.0.0.1:8000` by default. This localhost binding is intentional; V1.0 is an engineering workstation, not a hardened public multi-user service.
+The server binds to `127.0.0.1:8010` by default. This localhost binding is intentional; V1.0 is an engineering workstation, not a hardened public multi-user service. Use `MDT_PORT=0` for an OS-assigned ephemeral port.
 
 ## Acceptance
 
@@ -65,7 +65,7 @@ Windows file-lock behavior is part of acceptance. SQLite engines, API lifespan s
 
 **Gemini unavailable.** Verify `.env` contains `GEMINI_API_KEY`. Gemini is optional for deterministic product operation but required by the final credential-backed acceptance script because V1.0 includes the feature.
 
-**Port 8000 busy.** Stop the previous local process before starting another V1.0 instance.
+**Port 8010 busy.** Select another requested port or set `MDT_PORT=0`; the launcher never silently changes a requested endpoint.
 
 ## Final acceptance order and fail-fast behavior
 

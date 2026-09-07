@@ -1,0 +1,14 @@
+# Production runtime lock. Keep test-only tooling in
+# requirements-windows-tested.txt; the container should not install it.
+fastapi==0.141.1
+uvicorn[standard]==0.52.3
+pydantic==2.13.4
+sqlalchemy==2.0.52
+numpy==2.3.5
+scipy==1.18.0
+scikit-learn==1.8.0
+joblib==1.5.3
+python-dotenv==1.2.2
+gurobipy==13.0.2
+psycopg[binary]>=3.2,<4
+alembic>=1.14,<2

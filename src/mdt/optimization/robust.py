@@ -95,6 +95,8 @@ def solve_box_robust_schedule(
         problem.objective,
         current_time=problem.current_time,
         machine_available_from=dict(problem.machine_available_from),
+        prior_start=dict(problem.prior_start),
+        stability_penalty=problem.stability_penalty,
         # A nominal no-regret tardiness cap is not transferred blindly to a
         # processing-time upper-bound counterpart; uncertainty can make that
         # nominal cap physically infeasible. Robust performance is compared

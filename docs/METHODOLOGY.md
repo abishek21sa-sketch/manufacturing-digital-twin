@@ -1,6 +1,6 @@
 # Engineering Methodology — V1.0
 
-The browser Methodology page is served at `http://127.0.0.1:8000/methodology`. This document is the GitHub-readable companion. It summarizes only mathematics and model contracts that are implemented in the repository; `docs/TECHNICAL_METHODS.md` contains the full technical specification and validation details.
+The browser Methodology page is served at `http://127.0.0.1:8010/methodology`. This document is the GitHub-readable companion. It summarizes only mathematics and model contracts that are implemented in the repository; `docs/TECHNICAL_METHODS.md` contains the full technical specification and validation details.
 
 ## Decision chain
 

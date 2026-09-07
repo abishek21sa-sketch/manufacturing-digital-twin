@@ -1,0 +1,125 @@
+{
+  "algorithm": "TRUST-RH",
+  "null_hypothesis": "Trust-gating does not reduce invalid schedule release under degraded twin evidence, or stability-aware recovery does not reduce schedule churn relative to an ungated/zero-stability optimizer.",
+  "evidence_class": "synthetic engineering authorization and scheduling evidence",
+  "seed": null,
+  "authorization_experiments": [
+    {
+      "name": "fresh_complete",
+      "expected": "AUTHORIZED",
+      "actual": "AUTHORIZED",
+      "passed": true,
+      "score": 1.0
+    },
+    {
+      "name": "moderately_aged",
+      "expected": "AUTHORIZED",
+      "actual": "AUTHORIZED",
+      "passed": true,
+      "score": 0.8419698602928606
+    },
+    {
+      "name": "aging_review",
+      "expected": "HUMAN_REVIEW",
+      "actual": "HUMAN_REVIEW",
+      "passed": true,
+      "score": 0.7811286178610307
+    },
+    {
+      "name": "strict_policy_review",
+      "expected": "HUMAN_REVIEW",
+      "actual": "HUMAN_REVIEW",
+      "passed": true,
+      "score": 0.8419698602928606
+    },
+    {
+      "name": "ledger_mismatch",
+      "expected": "BLOCKED",
+      "actual": "BLOCKED",
+      "passed": true,
+      "score": 0.75
+    },
+    {
+      "name": "evidence_gap",
+      "expected": "BLOCKED",
+      "actual": "BLOCKED",
+      "passed": true,
+      "score": 0.9
+    },
+    {
+      "name": "stale_strict_block",
+      "expected": "BLOCKED",
+      "actual": "BLOCKED",
+      "passed": true,
+      "score": 0.7516844867497714
+    }
+  ],
+  "trust_sensitivity_cases": 96,
+  "stability_reference": {
+    "algorithm": "TRUST-RH",
+    "status": "OPTIMAL",
+    "optimizer_executed": true,
+    "objective_value": 2.3,
+    "job_to_slot": {
+      "J1": 0,
+      "J2": 1,
+      "J3": 2,
+      "J4": 3
+    },
+    "churn_count": 0,
+    "prior_slots": {
+      "J1": 0,
+      "J2": 1,
+      "J3": 2,
+      "J4": 3
+    },
+    "stability_penalty": 2.0,
+    "claim_boundary": "Synthetic scheduling evidence only; the slot abstraction does not prove realized plant performance."
+  },
+  "ungated_zero_stability_baseline": {
+    "algorithm": "TRUST-RH",
+    "status": "OPTIMAL",
+    "optimizer_executed": true,
+    "objective_value": 2.3,
+    "job_to_slot": {
+      "J1": 0,
+      "J2": 1,
+      "J3": 3,
+      "J4": 2
+    },
+    "churn_count": 2,
+    "prior_slots": {
+      "J1": 0,
+      "J2": 1,
+      "J3": 2,
+      "J4": 3
+    },
+    "stability_penalty": 0.0,
+    "claim_boundary": "Synthetic scheduling evidence only; the slot abstraction does not prove realized plant performance."
+  },
+  "blocked_reference": {
+    "algorithm": "TRUST-RH",
+    "status": "BLOCKED",
+    "optimizer_executed": false,
+    "objective_value": null,
+    "job_to_slot": {},
+    "churn_count": 0,
+    "prior_slots": {
+      "J1": 0,
+      "J2": 1,
+      "J3": 2,
+      "J4": 3
+    },
+    "stability_penalty": 2.0,
+    "claim_boundary": "Optimizer was not executed because twin trust evidence did not authorize scheduling."
+  },
+  "checks": {
+    "trust_canonical_all_pass": true,
+    "trust_sensitivity_complete": true,
+    "authorized_executes_signature": true,
+    "blocked_does_not_execute": true,
+    "stability_penalty_not_more_churn_than_ungated": true,
+    "stability_sensitivity_complete": true
+  },
+  "claim_boundary": "TRUST-RH trust scores and schedule results are engineering evidence, not calibrated probabilities of physical-state truth or realized production outcomes."
+}
