@@ -6,7 +6,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 COPY requirements-production.txt requirements-windows-tested.txt pyproject.toml README.md alembic.ini ./
-RUN pip install --no-cache-dir -r requirements-production.txt \
+RUN pip install --no-cache-dir setuptools wheel \
+    && pip install --no-cache-dir -r requirements-production.txt \
     && pip install --no-cache-dir --no-deps --no-build-isolation -e .
 
 COPY src ./src
