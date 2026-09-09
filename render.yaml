@@ -1,0 +1,118 @@
+# Render Blueprint for the backend API.
+# Using this file: in the Render dashboard, "New +" -> "Blueprint", point it
+# at this repo. Render reads this file and proposes the service + database
+# below -- review it, fill in the secret env vars it can't know (marked
+# sync: false), and deploy. Equally fine to skip this file entirely and
+# configure the same service by hand in the dashboard -- this is a
+# convenience, not a requirement. Nobody has run this against a real Render
+# account as part of this change -- no deploy credentials were used and no
+# deploy was triggered.
+#
+# Single-service deployment: the FastAPI app (src/mdt/api/main.py) serves the
+# zero-build workspace UI (workspace/index.html, app.js, styles.css) directly
+# via FileResponse/StaticFiles -- there is no separate frontend build or
+# second Render/Vercel service to configure.
+#
+# Why Postgres, not SQLite: src/mdt/config.py's Settings.validate_operational
+# hard-rejects a sqlite:// MDT_DATABASE_URL whenever MDT_ENV=production
+# ("production requires a server database URL; SQLite is local-only") and
+# also requires MDT_AUTO_CREATE_SCHEMA=false in that mode, forcing reviewed
+# Alembic migrations instead of implicit table creation. That check is a
+# property of the app itself, not a Render-specific choice, so the managed
+# Postgres database below is the only viable backing store for a production
+# deploy of this service -- matching docker-compose.production.yml's
+# database + migrate + mdt three-service local pattern.
+#
+# Migrations: docker-compose.production.yml runs `alembic -c alembic.ini
+# upgrade head` in a separate one-shot `migrate` service before the `mdt`
+# service starts. Render's Blueprint spec has no direct equivalent of a
+# dependent one-shot container for a single web service on every plan tier,
+# so `dockerCommand` below folds the same two steps into one sequential
+# start command: run the migration, then exec uvicorn. This is the same
+# migration invocation local/Docker use (see docs/DATABASE_OPERATIONS.md),
+# just sequenced inline instead of as a separate compose service.
+#
+# Connection string dialect fix: Render's managed Postgres `connectionString`
+# is a plain `postgresql://...` URL. requirements-production.txt only
+# installs `psycopg[binary]` (psycopg3), not psycopg2, and SQLAlchemy's bare
+# `postgresql://` scheme defaults to the psycopg2 driver -- so the URL must
+# be rewritten to `postgresql+psycopg://...` before Alembic/the app read it.
+# docker-compose.production.yml sidesteps this by constructing the URL with
+# the correct scheme directly; here the dockerCommand rewrites it with sed
+# before running Alembic. The rewrite deliberately uses only plain POSIX
+# shell (`$(...)`, sed, no `${var/pattern/repl}` bashism) since Render is
+# expected to run dockerCommand through the container's default `/bin/sh`
+# (dash on this Debian-slim base image), not bash.
+#
+# Port: Render's web services expect the app to bind to the port named by
+# its own PORT env var (default 10000), and only "usually" (per Render's
+# docs, not guaranteed) auto-detects a different bound port at runtime. The
+# Dockerfile's CMD hardcodes `--port 8000` and never reads $PORT, so PORT is
+# set to 8000 below to make routing deterministic instead of relying on
+# best-effort detection; the command below keeps that same literal port for
+# consistency with local Docker/docker-compose use.
+databases:
+  - name: mdt-postgres
+    plan: free
+    databaseName: mdt
+    user: mdt
+
+services:
+  - type: web
+    name: manufacturing-digital-twin
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /ready
+    dockerCommand: >-
+      export MDT_DATABASE_URL=$(printf '%s' "$MDT_DATABASE_URL" | sed 's#^postgresql://#postgresql+psycopg://#') &&
+      alembic -c alembic.ini upgrade head &&
+      exec uvicorn mdt.api.main:app --host 0.0.0.0 --port 8000 --proxy-headers
+    envVars:
+      - key: MDT_DATABASE_URL
+        fromDatabase:
+          name: mdt-postgres
+          property: connectionString
+      - key: PORT
+        value: "8000"
+      - key: MDT_ENV
+        value: production
+      - key: MDT_INSTANCE_ID
+        value: mdt-render-01
+      - key: MDT_AUTO_CREATE_SCHEMA
+        value: "false"
+      - key: MDT_AUTH_MODE
+        value: api_key
+      - key: MDT_API_KEY
+        generateValue: true
+      - key: MDT_READONLY_API_KEY
+        generateValue: true
+      - key: MDT_ADMIN_API_KEY
+        generateValue: true
+      # Render always injects RENDER_EXTERNAL_HOSTNAME with the service's
+      # real *.onrender.com host, but MDT_ALLOWED_HOSTS is read as a plain
+      # static value by src/mdt/config.py -- it cannot reference that
+      # variable. The value below matches this blueprint's own `name:`
+      # above; if Render suffixes/changes the hostname (e.g. on a name
+      # collision), update this to the exact host shown in the Render
+      # dashboard's service settings, or the app will 400 all requests via
+      # TrustedHostMiddleware.
+      - key: MDT_ALLOWED_HOSTS
+        value: manufacturing-digital-twin.onrender.com
+      - key: MDT_CORS_ORIGINS
+        value: ""
+      - key: MDT_EVENT_CONTRACT_VERSION
+        value: "1.0.0"
+      - key: MDT_SCHEMA_REVISION
+        value: mdt-rc4-hardening
+      - key: MDT_BENCHMARK_INSTANCE
+        value: ft06
+      # Unset (default): the optional Gemini copilot layer stays disabled,
+      # same as a bare `docker run` with no GEMINI_API_KEY -- every other
+      # endpoint (twin, IE, OR, simulation, trust, AI scoring) is unaffected.
+      # Set both of these in the Render dashboard to enable it.
+      - key: MDT_COPILOT_ENABLED
+        value: "false"
+      - key: GEMINI_API_KEY
+        sync: false

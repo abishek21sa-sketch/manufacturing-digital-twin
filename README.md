@@ -250,6 +250,12 @@ RC4 hardens the platform boundary needed before a named plant deployment: produc
 
 These controls do not claim that a plant connector, plant calibration, enterprise identity integration or site acceptance has occurred. Those remain explicit external release gates.
 
+## Cloud deployment (Render)
+
+`render.yaml` at the repository root is a Render Blueprint for a single Docker web service built from the existing `Dockerfile` -- there is no separate frontend deployment because the FastAPI app serves the zero-build `workspace/` UI directly. It provisions a managed PostgreSQL database and wires `MDT_DATABASE_URL` to it automatically; **SQLite is not offered as a deployment option** because `src/mdt/config.py` itself rejects a `sqlite:` URL whenever `MDT_ENV=production`, requiring a server database and `MDT_AUTO_CREATE_SCHEMA=false` with reviewed Alembic migrations instead. The service's `dockerCommand` runs `alembic upgrade head` before starting Uvicorn, mirroring what `docker-compose.production.yml`'s separate `migrate` step does locally.
+
+To deploy: push this repo to GitHub, then in the Render dashboard use "New +" -> "Blueprint" and point it at the repo. Render proposes the web service and database from `render.yaml`; review the auto-generated API keys (`MDT_API_KEY`, `MDT_READONLY_API_KEY`, `MDT_ADMIN_API_KEY`) in the dashboard before calling any `/v1/*` endpoint, and set `GEMINI_API_KEY` plus `MDT_COPILOT_ENABLED=true` only if the optional Gemini copilot layer is wanted. Render's free Postgres plan is time-limited and the free web-service plan spins down on idle, so treat this as a portfolio/demo deployment, not a persistent production instance. No deploy has been run against a real Render account as part of adding this file -- no deploy credentials were used or available.
+
 ## Pre-publication Fortune-50 readiness boundary
 
 Before a public GitHub commit, run the offline claim/provenance gate:
