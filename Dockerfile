@@ -17,6 +17,7 @@ COPY docs ./docs
 COPY migrations ./migrations
 COPY workspace ./workspace
 COPY scripts ./scripts
+RUN chmod +x scripts/render_start.sh
 
 RUN python scripts/production_preflight.py --static
 

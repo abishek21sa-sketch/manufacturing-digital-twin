@@ -65,10 +65,12 @@ services:
     dockerContext: .
     plan: free
     healthCheckPath: /ready
-    dockerCommand: >-
-      export MDT_DATABASE_URL=$(printf '%s' "$MDT_DATABASE_URL" | sed 's#^postgresql://#postgresql+psycopg://#') &&
-      alembic -c alembic.ini upgrade head &&
-      exec uvicorn mdt.api.main:app --host 0.0.0.0 --port 8000 --proxy-headers
+    # dockerCommand replaces the Dockerfile's CMD verbatim -- Render passes it to the container
+    # as a literal argv list, not through a shell, so the &&/export/$(...) pipeline this used to
+    # contain inline was never actually interpreted (every deploy exited immediately with status
+    # 128). scripts/render_start.sh holds that same migrate-then-serve sequence now; this is just
+    # a single executable path, with no shell syntax for Render to mis-tokenize.
+    dockerCommand: ./scripts/render_start.sh
     envVars:
       - key: MDT_DATABASE_URL
         fromDatabase:
